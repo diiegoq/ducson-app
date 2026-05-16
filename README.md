@@ -6,7 +6,14 @@ Theme: **Turn idea into impact faster**
 
 Prompt (Plan Mode):
 
-example: I want different classes of seats for Galaxium Travels. There is supposed to be an Economy, a Business class, and a Galaxium class. Help me make a plan to implement this.
+context: old codebase of a startup that needs refactoring, optimization and scalability. Need a plan for onboarding, to both understand the project and to start implementing solutions.
+
+solution: I want a solution where, from a public repository, IBM Bob analyzes codebase and explains what the code does, how components interact, and where critical logic lives.
+
+On parallel:
+
+- Watsonx.ai summarizes insights in plain language for the team, non-technical stakedholders and new hires.
+- watsonx Orchestrate coordinates follow up tasks such as generating a recap for the team, checklist for checking code malpractices, redundancies or vulnerabilities. 
 
 Create a folder called `plans` in the ducson-app folder and place the plan files in there. Ask claryfication questions.
 
