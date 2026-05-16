@@ -1,8 +1,12 @@
 # ducson-app
 
-## Idea
+## Ideas
 
 Theme: **Turn idea into impact faster**
+
+### Idea 1: Curious Bob
+
+_AI Onboarding & Ticket Orchestrator_
 
 Prompt (Plan Mode):
 
@@ -18,6 +22,18 @@ On parallel:
 - watsonx Orchestrate coordinates follow up tasks such as generating a recap for the team, checklist for checking code malpractices, redundancies or vulnerabilities. 
 
 Create a folder called `plans` in the ducson-app folder and place the plan files in there. Update AGENTS.md if necessary. Ask clarifying questions. 
+
+### Idea 2: Bob the Builder
+
+_Zero-Config DevOps Enginer_
+
+This DevOps engine automates backend containerization by using IBM Bob to scan uncontainerized codebases and instantly detect their frameworks and dependencies. It dynamically generates optimized multi-stage Dockerfiles, a local docker-compose setup, and a production-ready GitHub Actions CI/CD pipeline for a Vercel-like deployment experience.
+
+### Idea 3: BobOps
+
+_Self-Healing CI/CD Pipeline Agent_
+
+This smart plugin automates pipeline debugging by intercepting CI/CD build or runtime error logs and feeding them directly into IBM Bob. Combining these logs with full repository context, Bob automatically diagnoses the root cause, rewrites the faulty configuration files, and opens a git hotfix branch.
 
 ## Best Practices
 
