@@ -15,7 +15,7 @@ On parallel:
 - Watsonx.ai summarizes insights in plain language for the team, non-technical stakedholders and new hires.
 - watsonx Orchestrate coordinates follow up tasks such as generating a recap for the team, checklist for checking code malpractices, redundancies or vulnerabilities. 
 
-Create a folder called `plans` in the ducson-app folder and place the plan files in there. Ask claryfication questions.
+Create a folder called `plans` in the ducson-app folder and place the plan files in there. Update AGENTS.md if necessary. Ask clarifying questions. 
 
 ## Best Practices
 
