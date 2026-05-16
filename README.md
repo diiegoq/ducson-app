@@ -10,11 +10,54 @@ _AI Onboarding & Ticket Orchestrator_
 
 Prompt (Plan Mode):
 
-context: old codebase of a startup that needs refactoring, optimization and scalability. Need a plan for onboarding, to both understand the project and to start implementing solutions.
+Problem: Old codebase of a startup that needs refactoring, optimization and scalability. Need a plan for onboarding, to both understand the project and to start implementing solutions.
 
-solution: I want a solution where, from a public repository, IBM Bob analyzes codebase and explains what the code does, how components interact, and where critical logic lives. From this, the app return a series of tickets, assigned to the team members accordingly. For example: vulnerabitly in component X, category: Important, team member: Cybersec Engineer.
+Solution: I want a solution where, from a public repository, AI API analyzes codebase and explains what the code does, how components interact, and where critical logic lives. From this, the app return a series of tickets, assigned to the team members accordingly. For example: vulnerabitly in component X, category: Important, team member: Cybersec Engineer.
+
+User can give a list of team members, and the app will return a list of tickets, assigned to the team members accordingly. If there is no list, app has a list of default team members. Example: Junior SWE, Senior SWE, DevOps Eng, Cybersec Eng, Tech Lead, etc.
+
+The app does an overview of the application: main components, funcitonalities, general scope. From there, it separates the problem into subproblems, for better magagement of context windows and timeout constraints (avoid making the API scan the whole application). The app uses Github API to get file structure, ignores binaries, node_modules.
+
+1. Pass the filtered tree, package.json, README.md to LLM. Ask it to break the repo into Logical Subproblems/Modules
+2. Targeted Analyisis: For each module, as chosen by the user, fetch the contents of the files and send it to the LLM alongside team roster.
 
 Output can be a structured JSON so they can be rendered.
+
+Every finding should point to: files, functions, components, imports.
+
+Example: 
+
+``` json
+{
+  "ticket": {
+    "title": "Split monolithic auth service",
+    "relatedFiles": [
+      "src/services/auth.ts",
+      "src/controllers/login.ts"
+    ]
+  }
+}
+```
+
+From the structured JSON, the we can implement: Export to Jira. Export to Github Issues. Export to Notion. Export as CSV. Focus on CSV, the other are auth-heavy so leave it as to-do.
+
+The solution is a web app:
+- Frontend: Next.js 
+- Backend: Next.js with 
+- Deployment: Vercel
+
+Flow of the app:
+
+- User goes to site deployed in Vercel
+- User pastes a public repository URL
+- Server fetches the code and analyzes it
+- Server returns a structured JSON with the analysis
+- Server returns a list of tickets, assigned to the team members accordingly
+- Server returns a list of follow-up tasks
+- Server returns a list of questions
+- Server returns a list of recommendations
+- Server returns a list of risks
+- Server returns a list of dependencies
 
 On parallel:
 
