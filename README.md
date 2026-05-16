@@ -8,7 +8,9 @@ Prompt (Plan Mode):
 
 context: old codebase of a startup that needs refactoring, optimization and scalability. Need a plan for onboarding, to both understand the project and to start implementing solutions.
 
-solution: I want a solution where, from a public repository, IBM Bob analyzes codebase and explains what the code does, how components interact, and where critical logic lives.
+solution: I want a solution where, from a public repository, IBM Bob analyzes codebase and explains what the code does, how components interact, and where critical logic lives. From this, the app return a series of tickets, assigned to the team members accordingly. For example: vulnerabitly in component X, category: Important, team member: Cybersec Engineer.
+
+Output can be a structured JSON so they can be rendered.
 
 On parallel:
 
