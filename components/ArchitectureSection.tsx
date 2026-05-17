@@ -103,5 +103,3 @@ export default function ArchitectureSection({ architecture }: ArchitectureSectio
     </Box>
   );
 }
-
-// Made with Bob

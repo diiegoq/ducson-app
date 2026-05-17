@@ -136,5 +136,3 @@ export default function TechStackSection({ techStack }: TechStackProps) {
     </Box>
   );
 }
-
-// Made with Bob

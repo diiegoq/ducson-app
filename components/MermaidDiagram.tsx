@@ -130,5 +130,3 @@ export default function MermaidDiagram({ content, description, title }: MermaidD
 
   return diagramContent;
 }
-
-// Made with Bob

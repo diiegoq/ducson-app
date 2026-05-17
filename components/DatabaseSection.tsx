@@ -141,5 +141,3 @@ export default function DatabaseSection({ database }: DatabaseSectionProps) {
     </Box>
   );
 }
-
-// Made with Bob
