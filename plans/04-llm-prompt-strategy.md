@@ -7,18 +7,21 @@ This document defines the prompt engineering approach for both analysis phases, 
 ## LLM Configuration
 
 ### Model Selection
-- **Primary**: GPT-4 Turbo (`gpt-4-turbo-preview`)
-- **Context Window**: 128,000 tokens
-- **Max Output**: 4,096 tokens
+- **Primary**: Google Gemini 1.5 Flash (`gemini-1.5-flash`)
+- **Context Window**: 1,000,000 tokens (1M)
+- **Max Output**: 8,192 tokens
 - **Temperature**: 0.3 (balanced creativity/consistency)
-- **Top P**: 0.9
+- **Top P**: 0.95
+- **Top K**: 40
 
-### Why GPT-4 Turbo?
-- Superior code understanding
-- Excellent structured output generation
-- Reliable JSON formatting
-- Strong reasoning for architectural analysis
-- Good at following complex instructions
+### Why Gemini 1.5 Flash?
+- **Cost-effective**: ~97% cheaper than GPT-4 Turbo ($0.075/1M input vs $10/1M)
+- **Fast**: Optimized for speed with low latency
+- **Large context**: 1M token window allows analyzing more files at once
+- **Code understanding**: Strong performance on code analysis tasks
+- **JSON mode**: Native JSON output support
+- **Multimodal**: Can handle code, text, and future diagram analysis
+- **Good instruction following**: Reliable for structured outputs
 
 ---
 
@@ -163,14 +166,16 @@ Guidelines:
 - Compress whitespace in file tree representation
 - Use abbreviated paths where possible
 
-**Estimated Token Usage**:
+**Estimated Token Usage (Gemini 1.5 Flash)**:
 - System prompt: ~300 tokens
 - User prompt template: ~200 tokens
 - File tree (1000 files): ~8,000 tokens
 - Config files (3 files): ~3,000 tokens
 - **Total Input**: ~11,500 tokens
 - **Expected Output**: ~2,000 tokens
-- **Total**: ~13,500 tokens (~$0.14 per analysis)
+- **Total**: ~13,500 tokens
+- **Cost**: ~$0.0009 input + ~$0.0006 output = **~$0.0015 per analysis**
+- **Savings vs GPT-4**: ~99% cheaper
 
 ---
 
@@ -481,19 +486,21 @@ Guidelines:
 ### Token Optimization
 
 **Input Reduction**:
-- Limit to 50 files per analysis
-- Truncate files over 1000 lines (with warning)
-- Remove comments and excessive whitespace
+- Limit to 100 files per analysis (Gemini can handle more)
+- Truncate files over 2000 lines (with warning)
+- Remove excessive whitespace (keep comments for context)
 - Prioritize files with business logic over config files
 
-**Estimated Token Usage**:
+**Estimated Token Usage (Gemini 1.5 Flash)**:
 - System prompt: ~400 tokens
 - User prompt template: ~500 tokens
-- Source code (50 files, avg 200 lines): ~25,000 tokens
+- Source code (100 files, avg 200 lines): ~50,000 tokens
 - Team roster: ~100 tokens
-- **Total Input**: ~26,000 tokens
-- **Expected Output**: ~4,000 tokens
-- **Total**: ~30,000 tokens (~$0.30 per analysis)
+- **Total Input**: ~51,000 tokens
+- **Expected Output**: ~5,000 tokens
+- **Total**: ~56,000 tokens
+- **Cost**: ~$0.0038 input + ~$0.0015 output = **~$0.0053 per analysis**
+- **Savings vs GPT-4**: ~98% cheaper
 
 ---
 
@@ -533,13 +540,15 @@ Guidelines:
 **Detection**:
 ```typescript
 try {
-  const result = JSON.parse(llmResponse);
+  // Gemini returns JSON in response.text()
+  const result = JSON.parse(llmResponse.text());
   validateSchema(result);
 } catch (error) {
   // Retry with stricter instructions
   const retryPrompt = `
     Your previous response was not valid JSON.
     Please respond ONLY with the JSON object, no markdown, no explanations.
+    Use proper JSON syntax with double quotes for strings.
     ${originalPrompt}
   `;
 }
@@ -644,22 +653,29 @@ interface AnalysisCost {
   totalTokens: number;
   estimatedCost: number; // USD
   timestamp: string;
+  model: string; // 'gemini-1.5-flash'
 }
+
+// Gemini pricing
+const GEMINI_INPUT_COST = 0.075 / 1_000_000; // per token
+const GEMINI_OUTPUT_COST = 0.30 / 1_000_000; // per token
 
 // Track per analysis
 const cost = calculateCost(usage);
-logCost({ moduleId, cost, analysisModes });
+logCost({ moduleId, cost, analysisModes, model: 'gemini-1.5-flash' });
 ```
 
 ### Budget Alerts
 
 ```typescript
-const DAILY_BUDGET = 50; // USD
+const DAILY_BUDGET = 10; // USD (much lower with Gemini)
 const currentSpend = await getDailySpend();
 
 if (currentSpend > DAILY_BUDGET * 0.9) {
   notifyAdmin('Approaching daily LLM budget limit');
 }
+
+// With Gemini's low cost, can analyze ~1,800 modules per day for $10
 ```
 
 ---
@@ -705,16 +721,24 @@ const validateTickets = (tickets: unknown[]) => {
 ### Multi-Model Strategy
 
 **Specialized Models**:
-- GPT-4 Turbo: Architecture & refactoring
-- Claude 3.5 Sonnet: Security analysis
-- GPT-3.5 Turbo: Simple categorization
+- Gemini 1.5 Flash: Primary for all analysis (current)
+- Gemini 1.5 Pro: Complex architectural analysis (if needed)
+- Gemini 2.0 Flash: Experimental features (future)
+
+### Model Comparison
+
+| Model | Cost (per 1M tokens) | Context | Speed | Use Case |
+|-------|---------------------|---------|-------|----------|
+| Gemini 1.5 Flash | $0.075 / $0.30 | 1M | Fast | Primary (current) |
+| Gemini 1.5 Pro | $1.25 / $5.00 | 2M | Medium | Complex analysis |
+| GPT-4 Turbo | $10 / $30 | 128K | Medium | Fallback only |
 
 ### Fine-Tuning
 
-**Custom Model Training**:
+**Custom Model Training** (Future):
 - Collect high-quality analysis examples
-- Fine-tune on domain-specific patterns
-- Reduce token costs by 50%+
+- Fine-tune Gemini on domain-specific patterns
+- Further reduce costs and improve accuracy
 
 ### Retrieval-Augmented Generation (RAG)
 

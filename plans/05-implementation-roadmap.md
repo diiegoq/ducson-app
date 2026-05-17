@@ -28,15 +28,18 @@ Hour 8-10:  Testing, Bug Fixes & Demo Prep
 npx create-next-app@latest curious-bob --typescript --tailwind --app --no-src --import-alias "@/*"
 cd curious-bob
 
-# Install only essential dependencies
-npm install @octokit/rest openai zod lucide-react
+# Install essential dependencies
+npm install @octokit/rest @google/generative-ai zod lucide-react
 
-# Install minimal UI components
+# Install Material UI
+npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
+
+# Install minimal shadcn/ui components (for compatibility)
 npx shadcn-ui@latest init -y
-npx shadcn-ui@latest add button card input label textarea badge tabs
+npx shadcn-ui@latest add button card input label
 
 # Create .env.local
-echo "OPENAI_API_KEY=your-key-here" > .env.local
+echo "GOOGLE_AI_API_KEY=your-google-ai-studio-key-here" > .env.local
 ```
 
 ### Minimal File Structure
@@ -156,14 +159,23 @@ export const DEFAULT_TEAM = [
 ];
 ```
 
-### 3. Create Landing Page (`app/page.tsx`)
+### 3. Create Landing Page with Material UI (`app/page.tsx`)
 
 ```typescript
 'use client';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
+import {
+  Container,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Box,
+  Grid,
+  CircularProgress
+} from '@mui/material';
 
 export default function Home() {
   const [url, setUrl] = useState('');
@@ -186,36 +198,57 @@ export default function Home() {
   };
   
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-8">Curious Bob</h1>
-      <div className="flex gap-4 mb-8">
-        <Input
+    <Container maxWidth="lg" sx={{ py: 8 }}>
+      <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
+        Curious Bob
+      </Typography>
+      
+      <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+        <TextField
+          fullWidth
           placeholder="https://github.com/owner/repo"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          variant="outlined"
         />
-        <Button onClick={handleAnalyze} disabled={loading}>
-          {loading ? 'Analyzing...' : 'Analyze'}
+        <Button
+          variant="contained"
+          onClick={handleAnalyze}
+          disabled={loading}
+          sx={{ minWidth: 120 }}
+        >
+          {loading ? <CircularProgress size={24} /> : 'Analyze'}
         </Button>
-      </div>
+      </Box>
       
       {modules.length > 0 && (
-        <div className="grid grid-cols-3 gap-4">
+        <Grid container spacing={3}>
           {modules.map(module => (
-            <Card key={module.id} className="p-4">
-              <h3 className="font-bold">{module.name}</h3>
-              <p className="text-sm text-gray-600">{module.fileCount} files</p>
-              <Button 
-                className="mt-4 w-full"
-                onClick={() => window.location.href = `/results?module=${module.id}`}
-              >
-                Analyze Module
-              </Button>
-            </Card>
+            <Grid item xs={12} sm={6} md={4} key={module.id}>
+              <Card elevation={2}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    {module.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {module.fileCount} files
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => window.location.href = `/results?module=${module.id}`}
+                  >
+                    Analyze Module
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
           ))}
-        </div>
+        </Grid>
       )}
-    </div>
+    </Container>
   );
 }
 ```
@@ -229,9 +262,18 @@ export default function Home() {
 ### 1. Create LLM Client (`lib/llm.ts`)
 
 ```typescript
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+const model = genAI.getGenerativeModel({
+  model: 'gemini-1.5-flash',
+  generationConfig: {
+    temperature: 0.3,
+    topP: 0.95,
+    topK: 40,
+    maxOutputTokens: 8192,
+  }
+});
 
 export async function analyzeOverview(repoData: any, files: string[], packageJson: string) {
   const prompt = `
@@ -244,7 +286,7 @@ ${files.slice(0, 100).join('\n')}
 
 ${packageJson ? `package.json:\n${packageJson.slice(0, 1000)}` : ''}
 
-Return JSON with this structure:
+Return ONLY valid JSON with this structure (no markdown, no explanations):
 {
   "modules": [
     {
@@ -258,14 +300,12 @@ Return JSON with this structure:
 }
 `;
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
-    messages: [{ role: 'user', content: prompt }],
-    response_format: { type: 'json_object' },
-    temperature: 0.3
-  });
+  const result = await model.generateContent(prompt);
+  const response = result.response.text();
   
-  return JSON.parse(response.choices[0].message.content);
+  // Clean response (remove markdown if present)
+  const jsonText = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  return JSON.parse(jsonText);
 }
 
 export async function analyzeModule(moduleName: string, files: any[], team: string[]) {
@@ -278,7 +318,7 @@ ${files.map(f => `${f.path}:\n${f.content.slice(0, 500)}`).join('\n\n')}
 
 Team: ${team.join(', ')}
 
-Return JSON:
+Return ONLY valid JSON (no markdown, no explanations):
 {
   "tickets": [
     {
@@ -295,14 +335,12 @@ Return JSON:
 }
 `;
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
-    messages: [{ role: 'user', content: prompt }],
-    response_format: { type: 'json_object' },
-    temperature: 0.3
-  });
+  const result = await model.generateContent(prompt);
+  const response = result.response.text();
   
-  return JSON.parse(response.choices[0].message.content);
+  // Clean response (remove markdown if present)
+  const jsonText = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  return JSON.parse(jsonText);
 }
 ```
 
@@ -327,8 +365,10 @@ export async function POST(request: Request) {
       },
       ...analysis
     });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({
+      error: error.message || 'Analysis failed'
+    }, { status: 500 });
   }
 }
 ```
@@ -468,17 +508,38 @@ export default function Results() {
 ### Minimal Polish
 
 ```typescript
-// Add to layout.tsx
+// Add to layout.tsx with Material UI
+import { ThemeProvider, createTheme, CssBaseline, AppBar, Toolbar, Typography, Container } from '@mui/material';
+
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50">
-        <nav className="bg-white border-b p-4">
-          <div className="container mx-auto">
-            <h1 className="text-xl font-bold">Curious Bob</h1>
-          </div>
-        </nav>
-        {children}
+      <body>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AppBar position="static" elevation={1}>
+            <Toolbar>
+              <Typography variant="h6" component="div">
+                Curious Bob
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <main>
+            {children}
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

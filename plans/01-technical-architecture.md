@@ -4,15 +4,17 @@
 
 ### Frontend
 - **Framework**: Next.js 14+ (App Router)
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui (accessible, customizable, tree-shakeable)
+- **Styling**: Tailwind CSS + Material UI (MUI) components
+- **UI Components**:
+  - Material UI (MUI) for Material Design components
+  - shadcn/ui for base utilities (kept for compatibility)
 - **State Management**: React Context API (sufficient for MVP scope)
 - **Diagrams**: Mermaid.js (native markdown support, no external rendering)
 - **Type Safety**: TypeScript
 
 ### Backend
 - **Runtime**: Next.js API Route Handlers
-- **LLM Provider**: OpenAI GPT-4 Turbo (best code understanding, reliable API)
+- **LLM Provider**: Google Gemini 1.5 Flash (fast, cost-effective, 1M token context)
 - **GitHub Integration**: Octokit REST API
 - **Rate Limiting**: Vercel Edge Config or in-memory cache
 - **File Processing**: Stream-based parsing for large files
@@ -44,10 +46,10 @@
 | Constraint | Limit | Rationale |
 |------------|-------|-----------|
 | Max Repository Size | 100 MB | Prevents timeout, manageable token usage |
-| Max Files per Module | 50 files | Keeps context window under 128k tokens |
+| Max Files per Module | 100 files | Gemini 1.5 Flash supports 1M token context |
 | API Timeout (Overview) | 60 seconds | Vercel serverless function limit |
 | API Timeout (Module) | 60 seconds | Vercel serverless function limit |
-| Max File Size | 1 MB | Prevents single-file token overflow |
+| Max File Size | 2 MB | Gemini handles larger files efficiently |
 | Concurrent Analyses | 1 per session | Simplifies state management |
 
 ### Data Storage Strategy
@@ -72,20 +74,20 @@ graph TB
     API1[/api/analyze/overview]
     API2[/api/analyze/module]
     GitHub[GitHub API]
-    OpenAI[OpenAI API]
+    Gemini[Google Gemini API]
     
     User -->|1. Submit Repo URL| UI
     UI -->|2. POST repo URL| API1
     API1 -->|3. Fetch tree| GitHub
     API1 -->|4. Fetch config files| GitHub
-    API1 -->|5. Analyze structure| OpenAI
-    OpenAI -->|6. Module breakdown| API1
+    API1 -->|5. Analyze structure| Gemini
+    Gemini -->|6. Module breakdown| API1
     API1 -->|7. Return modules| UI
     
     UI -->|8. Select module| API2
     API2 -->|9. Fetch file contents| GitHub
-    API2 -->|10. Deep analysis| OpenAI
-    OpenAI -->|11. Tickets & findings| API2
+    API2 -->|10. Deep analysis| Gemini
+    Gemini -->|11. Tickets & findings| API2
     API2 -->|12. Return results| UI
     UI -->|13. Display & export| User
 ```
@@ -155,7 +157,7 @@ ducson-app/
 │   │   │   ├── tree-parser.ts         # Filter & clean tree
 │   │   │   └── content-fetcher.ts     # Batch file fetching
 │   │   ├── llm/
-│   │   │   ├── openai-client.ts       # OpenAI wrapper
+│   │   │   ├── gemini-client.ts       # Gemini API wrapper
 │   │   │   ├── prompts/
 │   │   │   │   ├── overview.ts        # Phase 1 prompt
 │   │   │   │   └── module.ts          # Phase 2 prompts
@@ -190,8 +192,10 @@ ducson-app/
 - Batch file content requests
 - Show rate limit status to user
 
-### OpenAI API
-- Token-based pricing
+### Google Gemini API
+- Token-based pricing (significantly cheaper than GPT-4)
+- Gemini 1.5 Flash: $0.075 per 1M input tokens, $0.30 per 1M output tokens
+- Rate limits: 15 RPM (requests per minute) for free tier, 1000 RPM for paid
 - Estimate costs before analysis
 - Stream responses for better UX
 - Implement retry logic with exponential backoff

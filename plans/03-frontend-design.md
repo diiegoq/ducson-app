@@ -1,88 +1,108 @@
 # Curious Bob - Frontend Design & User Flows
 
+## Design System
+
+### Material Design Integration
+- **Primary Library**: Material UI (MUI) v5+
+- **Base Components**: shadcn/ui (kept for utilities and compatibility)
+- **Design Language**: Material Design 3 principles
+- **Theme**: Flexible/customizable with Material Design tokens
+- **Elevation**: Material Design elevation system (0-24dp)
+- **Motion**: Material Design motion patterns (standard easing curves)
+
+### Material UI Components Used
+- **Layout**: `Container`, `Box`, `Grid`, `Stack`, `Paper`
+- **Navigation**: `AppBar`, `Drawer`, `Tabs`, `Breadcrumbs`
+- **Inputs**: `TextField`, `Button`, `Checkbox`, `Select`, `Autocomplete`
+- **Data Display**: `Card`, `Chip`, `Badge`, `Table`, `List`
+- **Feedback**: `CircularProgress`, `LinearProgress`, `Snackbar`, `Alert`
+- **Surfaces**: `Paper`, `Accordion`, `Dialog`
+
 ## Component Hierarchy
 
 ```
 App (layout.tsx)
-├── Navigation
+├── MUI ThemeProvider
+├── MUI CssBaseline
+├── Navigation (MUI AppBar)
 │   ├── Logo
-│   └── ThemeToggle
+│   └── ThemeToggle (MUI IconButton)
 │
 └── Page Routes
     ├── / (Landing Page)
-    │   ├── Hero
-    │   ├── Features
-    │   ├── HowItWorks
-    │   └── CTASection
+    │   ├── Hero (MUI Container + Typography)
+    │   ├── Features (MUI Grid + Card)
+    │   ├── HowItWorks (MUI Stepper)
+    │   └── CTASection (MUI Box + Button)
     │
     └── /analyze/[repoId] (Analysis Dashboard)
-        ├── AnalysisHeader
-        │   ├── RepoInfo
-        │   └── ProgressIndicator
+        ├── AnalysisHeader (MUI AppBar)
+        │   ├── RepoInfo (MUI Typography + Chip)
+        │   └── ProgressIndicator (MUI LinearProgress)
         │
         ├── Phase1: Overview (if not completed)
-        │   ├── RepoInputForm
-        │   │   ├── URLInput
-        │   │   ├── TokenInput (optional)
-        │   │   └── AnalyzeButton
-        │   └── LoadingState
+        │   ├── RepoInputForm (MUI Paper)
+        │   │   ├── URLInput (MUI TextField)
+        │   │   ├── TokenInput (MUI TextField with visibility toggle)
+        │   │   └── AnalyzeButton (MUI Button)
+        │   └── LoadingState (MUI CircularProgress + Skeleton)
         │
         ├── Phase2: Module Selection (after overview)
-        │   ├── OverviewSummary
-        │   │   ├── TechStackBadges
-        │   │   ├── ArchitectureType
-        │   │   └── SummaryText
+        │   ├── OverviewSummary (MUI Paper)
+        │   │   ├── TechStackBadges (MUI Chip)
+        │   │   ├── ArchitectureType (MUI Typography)
+        │   │   └── SummaryText (MUI Typography)
         │   │
-        │   ├── ModuleGrid
-        │   │   └── ModuleCard[] (selectable)
-        │   │       ├── ModuleName
-        │   │       ├── FileCount
-        │   │       ├── ComplexityBadge
-        │   │       └── SuggestedModes
+        │   ├── ModuleGrid (MUI Grid)
+        │   │   └── ModuleCard[] (MUI Card with elevation)
+        │   │       ├── ModuleName (MUI CardHeader)
+        │   │       ├── FileCount (MUI Typography)
+        │   │       ├── ComplexityBadge (MUI Chip)
+        │   │       └── SuggestedModes (MUI Chip array)
         │   │
-        │   ├── AnalysisConfiguration
-        │   │   ├── AnalysisModeSelector
-        │   │   │   └── ModeCheckbox[]
-        │   │   └── TeamRosterManager
-        │   │       ├── RosterList
-        │   │       ├── AddMemberButton
-        │   │       └── UseDefaultButton
+        │   ├── AnalysisConfiguration (MUI Paper)
+        │   │   ├── AnalysisModeSelector (MUI FormGroup)
+        │   │   │   └── ModeCheckbox[] (MUI Checkbox + FormControlLabel)
+        │   │   └── TeamRosterManager (MUI List)
+        │   │       ├── RosterList (MUI List + ListItem)
+        │   │       ├── AddMemberButton (MUI Fab)
+        │   │       └── UseDefaultButton (MUI Button)
         │   │
-        │   └── AnalyzeModuleButton
+        │   └── AnalyzeModuleButton (MUI Button variant="contained")
         │
         └── Phase3: Results Display (after module analysis)
-            ├── ResultsTabs
+            ├── ResultsTabs (MUI Tabs + TabPanel)
             │   ├── TicketsTab
-            │   │   ├── TicketFilters
-            │   │   │   ├── CategoryFilter
-            │   │   │   ├── PriorityFilter
-            │   │   │   └── AssigneeFilter
-            │   │   └── TicketList
-            │   │       └── TicketCard[]
-            │   │           ├── TicketHeader
-            │   │           ├── TicketDescription
-            │   │           ├── CodeLocations
-            │   │           └── SuggestedActions
+            │   │   ├── TicketFilters (MUI Select + Autocomplete)
+            │   │   │   ├── CategoryFilter (MUI Select)
+            │   │   │   ├── PriorityFilter (MUI Select)
+            │   │   │   └── AssigneeFilter (MUI Autocomplete)
+            │   │   └── TicketList (MUI Stack)
+            │   │       └── TicketCard[] (MUI Card + CardContent)
+            │   │           ├── TicketHeader (MUI CardHeader)
+            │   │           ├── TicketDescription (MUI Typography)
+            │   │           ├── CodeLocations (MUI List)
+            │   │           └── SuggestedActions (MUI List)
             │   │
             │   ├── RisksTab
-            │   │   └── RiskList
-            │   │       └── RiskCard[]
+            │   │   └── RiskList (MUI Stack)
+            │   │       └── RiskCard[] (MUI Alert + Card)
             │   │
             │   ├── InsightsTab
-            │   │   ├── CodeQualityScore
-            │   │   ├── DependencyTable
-            │   │   ├── ArchitecturePatterns
-            │   │   └── TestCoverageEstimate
+            │   │   ├── CodeQualityScore (MUI CircularProgress with label)
+            │   │   ├── DependencyTable (MUI Table)
+            │   │   ├── ArchitecturePatterns (MUI Chip array)
+            │   │   └── TestCoverageEstimate (MUI LinearProgress)
             │   │
             │   ├── DiagramTab
-            │   │   └── MermaidDiagram
+            │   │   └── MermaidDiagram (MUI Paper)
             │   │
             │   └── OnboardingTab
-            │       └── OnboardingGuide
-            │           └── ReadingOrderList
+            │       └── OnboardingGuide (MUI Stepper)
+            │           └── ReadingOrderList (MUI List)
             │
-            └── ExportSection
-                ├── ExportButton (CSV)
+            └── ExportSection (MUI SpeedDial)
+                ├── ExportButton (MUI Button + Menu)
                 └── ExportButton (Future: Jira, GitHub, Notion)
 ```
 
@@ -320,7 +340,7 @@ graph TD
 
 ## Component Specifications
 
-### 1. RepoInputForm
+### 1. RepoInputForm (Material UI)
 
 **Props**:
 ```typescript
@@ -331,21 +351,30 @@ interface RepoInputFormProps {
 }
 ```
 
+**Material UI Components**:
+- `Paper` with elevation={2} for form container
+- `TextField` with variant="outlined" for URL input
+- `TextField` with `InputAdornment` for token visibility toggle
+- `Button` variant="contained" for submit
+- `CircularProgress` for loading state
+- `Alert` severity="error" for error messages
+- `Link` component for example repositories
+
 **Features**:
-- URL validation with real-time feedback
-- Optional token input with visibility toggle
-- Example links for quick testing
-- Loading state with progress indicator
-- Error display with suggestions
+- URL validation with real-time feedback using MUI helper text
+- Optional token input with visibility toggle (MUI IconButton)
+- Example links for quick testing (MUI Link)
+- Loading state with MUI CircularProgress
+- Error display with MUI Alert component
 
 **Validation**:
 - Must match GitHub URL pattern
-- Show warning if no token provided (rate limits)
-- Disable submit while loading
+- Show MUI helper text warning if no token provided
+- Disable submit while loading (MUI Button disabled prop)
 
 ---
 
-### 2. ModuleCard
+### 2. ModuleCard (Material UI)
 
 **Props**:
 ```typescript
@@ -356,22 +385,30 @@ interface ModuleCardProps {
 }
 ```
 
-**Visual States**:
-- Default: Gray border, white background
-- Hover: Blue border, subtle shadow
-- Selected: Blue border, blue background tint
-- Disabled: Gray opacity, no interaction
+**Material UI Components**:
+- `Card` with elevation={isSelected ? 8 : 2}
+- `CardHeader` for module name
+- `CardContent` for details
+- `CardActions` for select button
+- `Chip` for file count and complexity
+- `Checkbox` for selection
+
+**Visual States (Material Design)**:
+- Default: elevation={2}, neutral surface color
+- Hover: elevation={4}, subtle shadow increase
+- Selected: elevation={8}, primary color tint
+- Disabled: reduced opacity, no interaction
 
 **Content**:
-- Module name (bold)
-- File count badge
-- Complexity indicator (color-coded)
-- Suggested analysis modes (chips)
-- Select checkbox
+- Module name (MUI Typography variant="h6")
+- File count badge (MUI Chip size="small")
+- Complexity indicator (MUI Chip with color prop)
+- Suggested analysis modes (MUI Chip array)
+- Select checkbox (MUI Checkbox)
 
 ---
 
-### 3. AnalysisModeSelector
+### 3. AnalysisModeSelector (Material UI)
 
 **Props**:
 ```typescript
@@ -381,21 +418,29 @@ interface AnalysisModeSelectorProps {
 }
 ```
 
-**Layout**: 2-column grid of checkboxes
+**Material UI Components**:
+- `FormGroup` for checkbox group
+- `FormControlLabel` for each mode
+- `Checkbox` with color="primary"
+- `Tooltip` for descriptions
+- `Alert` for validation warnings
+- `Grid` for 2-column layout
+
+**Layout**: MUI Grid with 2 columns on desktop, 1 on mobile
 
 **Each Mode Shows**:
-- Icon
-- Mode name
-- Brief description (tooltip)
-- Estimated time impact
+- Icon (MUI Icon component)
+- Mode name (MUI FormControlLabel)
+- Brief description (MUI Tooltip)
+- Estimated time impact (MUI Typography variant="caption")
 
 **Validation**:
 - At least 1 mode must be selected
-- Show warning if >4 modes (longer processing)
+- Show MUI Alert severity="warning" if >4 modes
 
 ---
 
-### 4. TeamRosterManager
+### 4. TeamRosterManager (Material UI)
 
 **Props**:
 ```typescript
@@ -405,21 +450,30 @@ interface TeamRosterManagerProps {
 }
 ```
 
-**Features**:
-- List of current team members
-- Add member button (opens modal)
-- Remove member button (per member)
-- "Use Default Team" quick action
-- Drag-to-reorder (future enhancement)
+**Material UI Components**:
+- `List` for team members
+- `ListItem` with `ListItemText` for each member
+- `IconButton` for remove action
+- `Fab` (Floating Action Button) for add member
+- `Dialog` for add member modal
+- `TextField` for role/name inputs
+- `Button` for modal actions
 
-**Add Member Modal**:
-- Role input (text or dropdown)
-- Optional name input
-- Save/Cancel buttons
+**Features**:
+- List of current team members (MUI List)
+- Add member button (MUI Fab with + icon)
+- Remove member button (MUI IconButton per member)
+- "Use Default Team" quick action (MUI Button variant="outlined")
+- Drag-to-reorder using MUI sortable list (future)
+
+**Add Member Modal (MUI Dialog)**:
+- Role input (MUI TextField or Autocomplete)
+- Optional name input (MUI TextField)
+- Save/Cancel buttons (MUI Button)
 
 ---
 
-### 5. TicketCard
+### 5. TicketCard (Material UI)
 
 **Props**:
 ```typescript
@@ -430,35 +484,49 @@ interface TicketCardProps {
 }
 ```
 
-**Layout**:
+**Material UI Components**:
+- `Card` with elevation={2}
+- `CardHeader` for ID and priority
+- `CardContent` for details
+- `CardActions` for buttons
+- `Chip` for priority badge
+- `Typography` for text content
+- `List` for files and actions
+- `Button` for actions
+
+**Layout** (Material Design):
 ```
 ┌─────────────────────────────────────────┐
-│ ID                    Priority Badge    │
-│ Title                                    │
-│ Assigned: Role                          │
+│ CardHeader                              │
+│ ID (subtitle)    Priority Chip (action) │
+│ Title (title)                           │
 │                                          │
-│ Description (truncated)                 │
+│ CardContent                             │
+│ Assigned: Role (Typography)             │
 │                                          │
-│ Files: file1.ts, file2.ts (+2 more)    │
-│ Functions: func1(), func2()             │
+│ Description (Typography body2)          │
 │                                          │
-│ Suggested Actions:                      │
-│ 1. Action one                           │
-│ 2. Action two                           │
+│ Files: Chip array                       │
+│ Functions: Chip array                   │
 │                                          │
+│ Suggested Actions: List                 │
+│ • Action one (ListItem)                 │
+│ • Action two (ListItem)                 │
+│                                          │
+│ CardActions                             │
 │ [View Details] [Mark as Done]           │
 └─────────────────────────────────────────┘
 ```
 
-**Priority Colors**:
-- Critical: Red (#EF4444)
-- High: Orange (#F59E0B)
-- Medium: Yellow (#EAB308)
-- Low: Green (#10B981)
+**Priority Colors (Material Design)**:
+- Critical: error.main (#d32f2f)
+- High: warning.main (#ed6c02)
+- Medium: info.main (#0288d1)
+- Low: success.main (#2e7d32)
 
 ---
 
-### 6. MermaidDiagram
+### 6. MermaidDiagram (Material UI)
 
 **Props**:
 ```typescript
@@ -468,19 +536,28 @@ interface MermaidDiagramProps {
 }
 ```
 
+**Material UI Components**:
+- `Paper` with elevation={1} for container
+- `Box` for diagram wrapper
+- `IconButton` for zoom controls
+- `SpeedDial` for actions (download, fullscreen)
+- `Alert` for error messages
+- `Typography` for description
+
 **Features**:
-- Client-side Mermaid rendering
-- Zoom controls
-- Download as PNG/SVG
-- Fullscreen mode
-- Error handling for invalid syntax
+- Client-side Mermaid rendering in MUI Paper
+- Zoom controls (MUI IconButton)
+- Download as PNG/SVG (MUI SpeedDial actions)
+- Fullscreen mode (MUI Dialog)
+- Error handling with MUI Alert
 
 **Implementation**:
 ```typescript
 import mermaid from 'mermaid';
 import { useEffect, useRef } from 'react';
+import { Paper, Box, IconButton } from '@mui/material';
 
-mermaid.initialize({ 
+mermaid.initialize({
   startOnLoad: false,
   theme: 'default',
   securityLevel: 'loose'
@@ -489,7 +566,7 @@ mermaid.initialize({
 
 ---
 
-### 7. ExportButton
+### 7. ExportButton (Material UI)
 
 **Props**:
 ```typescript
@@ -500,11 +577,18 @@ interface ExportButtonProps {
 }
 ```
 
+**Material UI Components**:
+- `Button` variant="contained" with startIcon
+- `Menu` for format selection
+- `MenuItem` for each format option
+- `CircularProgress` for loading state
+- `Snackbar` with `Alert` for success message
+
 **Features**:
 - Generate CSV/JSON on click
 - Trigger browser download
-- Show success toast
-- Loading state during generation
+- Show MUI Snackbar with success message
+- Loading state with MUI CircularProgress
 
 **CSV Generation**:
 ```typescript
@@ -517,27 +601,37 @@ const generateCSV = (tickets: Ticket[]) => {
 
 ---
 
-## Responsive Design Breakpoints
+## Responsive Design Breakpoints (Material UI)
 
-```css
-/* Mobile First Approach */
-/* Mobile: < 640px */
-- Single column layout
+Material UI uses the following breakpoints:
+```typescript
+/* Material UI Breakpoints */
+/* xs: 0px - 600px (Mobile) */
+- Single column layout (Grid xs={12})
 - Stacked cards
-- Collapsible sections
-- Bottom sheet modals
+- Collapsible sections (MUI Accordion)
+- Bottom sheet modals (MUI Drawer anchor="bottom")
 
-/* Tablet: 640px - 1024px */
-- 2-column grid for modules
+/* sm: 600px - 900px (Tablet) */
+- 2-column grid for modules (Grid sm={6})
 - Side-by-side filters
-- Slide-over panels
+- Slide-over panels (MUI Drawer)
 
-/* Desktop: > 1024px */
-- 3-column grid for modules
-- Fixed sidebar navigation
-- Modal dialogs
-- Hover interactions
+/* md: 900px - 1200px (Small Desktop) */
+- 3-column grid for modules (Grid md={4})
+- Fixed sidebar navigation (MUI Drawer variant="permanent")
+- Modal dialogs (MUI Dialog)
+
+/* lg: 1200px+ (Large Desktop) */
+- 4-column grid option (Grid lg={3})
+- Enhanced hover interactions
+- Expanded navigation
 ```
+
+**Responsive Utilities**:
+- Use MUI `useMediaQuery` hook for conditional rendering
+- Use MUI `sx` prop with breakpoint-specific styles
+- Use MUI `Grid` with responsive props (xs, sm, md, lg, xl)
 
 ## Loading States
 

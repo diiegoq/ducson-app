@@ -80,7 +80,7 @@
 - `REPO_TOO_LARGE`: Exceeds 100MB limit
 - `RATE_LIMIT_EXCEEDED`: GitHub API rate limit hit
 - `GITHUB_API_ERROR`: GitHub API failure
-- `LLM_API_ERROR`: OpenAI API failure
+- `LLM_API_ERROR`: Gemini API failure
 - `ANALYSIS_TIMEOUT`: Processing exceeded 60s
 - `INVALID_REPOSITORY`: Not a valid code repository
 
@@ -220,6 +220,7 @@
 - `INVALID_ANALYSIS_MODE`: Unknown analysis mode
 - `INVALID_TEAM_ROSTER`: Invalid roster format
 - `FILE_FETCH_ERROR`: Failed to fetch file contents
+- `GEMINI_QUOTA_EXCEEDED`: Gemini API quota exceeded
 
 **Processing Steps**:
 1. Validate request parameters
@@ -554,19 +555,21 @@ X-RateLimit-Remaining: 45
 X-RateLimit-Reset: 1372700873
 ```
 
-### OpenAI API Limits
+### Google Gemini API Limits
 
-**GPT-4 Turbo**:
-- 10,000 requests/day (Tier 1)
-- 2M tokens/minute
-- Cost: $10/1M input tokens, $30/1M output tokens
+**Gemini 1.5 Flash**:
+- Free tier: 15 requests/minute, 1M tokens/minute, 1500 requests/day
+- Paid tier: 1000 requests/minute, 4M tokens/minute
+- Context window: 1M tokens
+- Cost: $0.075/1M input tokens, $0.30/1M output tokens (significantly cheaper than GPT-4)
 
 **Token Estimation**:
 - Average file: ~500 tokens
-- 50 files: ~25,000 tokens
+- 100 files: ~50,000 tokens (Gemini can handle more files)
 - System prompt: ~2,000 tokens
 - Response: ~5,000 tokens
-- **Total per module analysis**: ~32,000 tokens (~$0.32)
+- **Total per module analysis**: ~57,000 tokens (~$0.006 input + $0.0015 output = ~$0.008 per analysis)
+- **Cost savings**: ~97% cheaper than GPT-4 Turbo
 
 ---
 
