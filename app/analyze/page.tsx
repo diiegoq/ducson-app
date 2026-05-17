@@ -1,11 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Alert, CircularProgress } from '@mui/material';
 import { PerspectiveSelector } from '@/components/PerspectiveSelector';
 import { AnalysisPerspective } from '@/lib/types';
 
-export default function AnalyzePage() {
+function AnalyzeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState('');
@@ -75,7 +75,6 @@ export default function AnalyzePage() {
 
   return (
     <div className="container-playful" style={{ minHeight: '100vh' }}>
-      {/* Back Button and Header */}
       <div style={{ marginBottom: '2rem' }}>
         <button
           className="button-playful"
@@ -98,4 +97,16 @@ export default function AnalyzePage() {
   );
 }
 
-// Made with Bob
+export default function AnalyzePage() {
+  return (
+    <Suspense fallback={
+      <div className="container-playful" style={{ minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+          <CircularProgress size={60} style={{ color: 'var(--bob-yellow-dark)' }} />
+        </div>
+      </div>
+    }>
+      <AnalyzeContent />
+    </Suspense>
+  );
+}
