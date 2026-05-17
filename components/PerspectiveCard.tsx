@@ -1,7 +1,5 @@
 'use client';
 
-import { Card, CardContent, Typography, Box, Chip, Radio } from '@mui/material';
-import { CheckCircle as CheckCircleIcon } from '@mui/icons-material';
 import { AnalysisPerspective, PERSPECTIVES } from '@/lib/types';
 
 interface PerspectiveCardProps {
@@ -14,104 +12,112 @@ export function PerspectiveCard({ perspective, selected, onSelect }: Perspective
   const info = PERSPECTIVES[perspective];
   
   return (
-    <Card
-      elevation={selected ? 8 : 2}
-      sx={{
-        cursor: 'pointer',
-        transition: 'all 0.3s',
-        border: selected ? 3 : 1,
-        borderColor: selected ? 'primary.main' : 'divider',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: 6
-        },
-        height: '100%',
-        position: 'relative'
-      }}
+    <div
+      className={selected ? 'card-selected' : 'card-unselected'}
       onClick={() => onSelect(perspective)}
+      style={{
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        height: '100%',
+        padding: '1.5rem',
+        borderRadius: '16px'
+      }}
+      onMouseEnter={(e) => {
+        if (!selected) {
+          e.currentTarget.style.transform = 'translateY(-4px)';
+          e.currentTarget.style.boxShadow = '5px 5px 0px var(--bob-brown-light)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!selected) {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '3px 3px 0px var(--bob-brown-light)';
+        }
+      }}
     >
-      <CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
-          <Box sx={{ fontSize: '2.5rem', lineHeight: 1 }}>
-            {info.icon}
-          </Box>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" component="h3" gutterBottom sx={{ fontWeight: 'bold' }}>
-              {info.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              {info.description}
-            </Typography>
-          </Box>
-          <Radio
-            checked={selected}
-            sx={{ mt: -1 }}
-            color="primary"
-          />
-        </Box>
+      <div style={{ marginBottom: '1rem' }}>
+        <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontFamily: 'var(--font-heading)' }}>
+          {info.name}
+        </h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>
+          {info.description}
+        </p>
+      </div>
 
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary', display: 'block', mb: 0.5 }}>
-            For:
-          </Typography>
-          <Typography variant="body2">
-            {info.targetRoles.join(', ')}
-          </Typography>
-        </Box>
+      <div style={{ marginBottom: '1rem' }}>
+        <p style={{ 
+          fontSize: '0.75rem', 
+          fontWeight: 'bold', 
+          color: 'var(--text-secondary)', 
+          marginBottom: '0.25rem',
+          textTransform: 'uppercase'
+        }}>
+          For:
+        </p>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+          {info.targetRoles.join(', ')}
+        </p>
+      </div>
 
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary', display: 'block', mb: 0.5 }}>
-            Focus Areas:
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {info.focusAreas.slice(0, 3).map((area, idx) => (
-              <Chip
-                key={idx}
-                label={area}
-                size="small"
-                variant="outlined"
-              />
-            ))}
-            {info.focusAreas.length > 3 && (
-              <Chip
-                label={`+${info.focusAreas.length - 3} more`}
-                size="small"
-                variant="outlined"
-                color="default"
-              />
-            )}
-          </Box>
-        </Box>
+      <div style={{ marginBottom: '1rem' }}>
+        <p style={{ 
+          fontSize: '0.75rem', 
+          fontWeight: 'bold', 
+          color: 'var(--text-secondary)', 
+          marginBottom: '0.5rem',
+          textTransform: 'uppercase'
+        }}>
+          Focus Areas:
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+          {info.focusAreas.slice(0, 3).map((area, idx) => (
+            <span
+              key={idx}
+              style={{
+                background: 'white',
+                padding: '4px 10px',
+                borderRadius: '10px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                border: '2px solid var(--bob-brown-light)',
+                color: 'var(--text-primary)'
+              }}
+            >
+              {area}
+            </span>
+          ))}
+          {info.focusAreas.length > 3 && (
+            <span
+              style={{
+                background: 'white',
+                padding: '4px 10px',
+                borderRadius: '10px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                border: '2px solid var(--bob-brown-light)',
+                color: 'var(--text-secondary)'
+              }}
+            >
+              +{info.focusAreas.length - 3} more
+            </span>
+          )}
+        </div>
+      </div>
 
-        <Box>
-          <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary', display: 'block', mb: 0.5 }}>
-            Team:
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {info.team.join(', ')}
-          </Typography>
-        </Box>
-
-        {selected && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              bgcolor: 'primary.main',
-              color: 'white',
-              borderRadius: '50%',
-              width: 32,
-              height: 32,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <CheckCircleIcon />
-          </Box>
-        )}
-      </CardContent>
-    </Card>
+      <div>
+        <p style={{ 
+          fontSize: '0.75rem', 
+          fontWeight: 'bold', 
+          color: 'var(--text-secondary)', 
+          marginBottom: '0.25rem',
+          textTransform: 'uppercase'
+        }}>
+          Team:
+        </p>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          {info.team.join(', ')}
+        </p>
+      </div>
+    </div>
   );
 }

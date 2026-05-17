@@ -1,24 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Box,
-  Typography,
-  Grid,
-  Button,
-  Paper,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  Chip,
-  Alert
-} from '@mui/material';
-import {
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
-  PlayArrow as PlayArrowIcon
-} from '@mui/icons-material';
+import { Alert } from '@mui/material';
 import { AnalysisPerspective, PERSPECTIVES } from '@/lib/types';
 import { PerspectiveCard } from './PerspectiveCard';
 
@@ -29,10 +12,8 @@ interface PerspectiveSelectorProps {
 
 export function PerspectiveSelector({ onSelect, defaultPerspective = 'technical-debt' }: PerspectiveSelectorProps) {
   const [selectedPerspective, setSelectedPerspective] = useState<AnalysisPerspective>(defaultPerspective);
-  const [showAll, setShowAll] = useState(false);
 
   const perspectives = Object.keys(PERSPECTIVES) as AnalysisPerspective[];
-  const displayedPerspectives = showAll ? perspectives : perspectives.slice(0, 4);
 
   const handleSelect = (perspective: AnalysisPerspective) => {
     setSelectedPerspective(perspective);
@@ -45,112 +26,114 @@ export function PerspectiveSelector({ onSelect, defaultPerspective = 'technical-
   const selectedInfo = PERSPECTIVES[selectedPerspective];
 
   return (
-    <Box>
+    <div>
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Select Analysis Perspective
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Choose how you want to analyze this module. Each perspective provides tailored insights for different roles and concerns.
-        </Typography>
-      </Box>
+      <div style={{ marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
+          Choose Your Analysis Style
+        </h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+          Pick how Bob should look at this code
+        </p>
+      </div>
 
-      {/* Perspective Grid */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        {displayedPerspectives.map((perspective) => (
-          <Grid item xs={12} md={6} key={perspective}>
-            <PerspectiveCard
-              perspective={perspective}
-              selected={selectedPerspective === perspective}
-              onSelect={handleSelect}
-            />
-          </Grid>
+      {/* Perspective Grid - Show all perspectives */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: '1.5rem',
+        marginBottom: '2rem'
+      }}>
+        {perspectives.map((perspective) => (
+          <PerspectiveCard
+            key={perspective}
+            perspective={perspective}
+            selected={selectedPerspective === perspective}
+            onSelect={handleSelect}
+          />
         ))}
-      </Grid>
-
-      {/* Show More/Less Button */}
-      {perspectives.length > 4 && (
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Button
-            variant="outlined"
-            onClick={() => setShowAll(!showAll)}
-            endIcon={showAll ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            size="large"
-          >
-            {showAll ? 'Show Less' : `Show ${perspectives.length - 4} More Perspectives`}
-          </Button>
-        </Box>
-      )}
-
-      <Divider sx={{ my: 4 }} />
+      </div>
 
       {/* Selected Perspective Summary */}
-      <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: 'primary.50' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <Box sx={{ fontSize: '2rem' }}>{selectedInfo.icon}</Box>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Selected: {selectedInfo.name}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {selectedInfo.description}
-            </Typography>
-          </Box>
-        </Box>
+      <div className="card-playful-peach" style={{ marginBottom: '2rem' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+            Selected: {selectedInfo.name}
+          </h3>
+          <p style={{ color: 'var(--text-secondary)' }}>
+            {selectedInfo.description}
+          </p>
+        </div>
 
-        <Grid container spacing={3} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={6}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '1.5rem',
+          marginBottom: '1rem'
+        }}>
+          <div>
+            <p style={{ 
+              fontSize: '0.875rem', 
+              fontWeight: 'bold', 
+              marginBottom: '0.5rem',
+              color: 'var(--bob-brown-dark)'
+            }}>
               Team Roster (Auto-adjusted):
-            </Typography>
-            <List dense disablePadding>
+            </p>
+            <ul style={{ margin: 0, paddingLeft: '1.25rem' }}>
               {selectedInfo.team.map((member, idx) => (
-                <ListItem key={idx} disablePadding>
-                  <ListItemText
-                    primary={`• ${member}`}
-                    primaryTypographyProps={{ variant: 'body2' }}
-                  />
-                </ListItem>
+                <li key={idx} style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                  {member}
+                </li>
               ))}
-            </List>
-          </Grid>
+            </ul>
+          </div>
 
-          <Grid item xs={12} md={6}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+          <div>
+            <p style={{ 
+              fontSize: '0.875rem', 
+              fontWeight: 'bold', 
+              marginBottom: '0.5rem',
+              color: 'var(--bob-brown-dark)'
+            }}>
               Focus Areas:
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               {selectedInfo.focusAreas.map((area, idx) => (
-                <Chip
+                <span
                   key={idx}
-                  label={area}
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                />
+                  style={{
+                    background: 'white',
+                    padding: '4px 10px',
+                    borderRadius: '10px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    border: '2px solid var(--bob-brown-light)',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  {area}
+                </span>
               ))}
-            </Box>
-          </Grid>
-        </Grid>
+            </div>
+          </div>
+        </div>
 
-        <Alert severity="info" sx={{ mt: 2 }}>
+        <Alert severity="info" style={{ marginTop: '1rem' }}>
           Estimated Analysis Time: 45-60 seconds
         </Alert>
-      </Paper>
+      </div>
 
-      {/* Confirm Button */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          variant="contained"
-          size="large"
+      {/* Confirm Button - Centered */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <button
+          className="button-playful button-playful-large"
           onClick={handleConfirm}
-          startIcon={<PlayArrowIcon />}
-          sx={{ minWidth: 250, py: 1.5 }}
+          style={{ minWidth: '300px' }}
         >
-          Analyze with {selectedInfo.name}
-        </Button>
-      </Box>
-    </Box>
+          Start Analysis
+        </button>
+      </div>
+    </div>
   );
 }

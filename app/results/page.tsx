@@ -1,32 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import {
-  Container,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Button,
-  Chip,
-  CircularProgress,
-  Alert,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  Stack
-} from '@mui/material';
-import {
-  Download as DownloadIcon,
-  ArrowBack as ArrowBackIcon,
-  BugReport as BugIcon,
-  Security as SecurityIcon,
-  Speed as SpeedIcon,
-  Build as BuildIcon,
-  Star as StarIcon,
-  Description as DescriptionIcon
-} from '@mui/icons-material';
+import { CircularProgress, Alert } from '@mui/material';
 import { Ticket, AnalysisPerspective, PERSPECTIVES, PerspectiveInsights as PerspectiveInsightsType } from '@/lib/types';
 import { PerspectiveInsights } from '@/components/PerspectiveInsights';
 
@@ -126,196 +101,218 @@ export default function Results() {
     URL.revokeObjectURL(url);
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityBadgeClass = (priority: string) => {
     switch (priority.toLowerCase()) {
-      case 'high': return 'error';
-      case 'medium': return 'warning';
-      case 'low': return 'success';
-      default: return 'default';
-    }
-  };
-
-  const getCategoryIcon = (category: string) => {
-    switch (category.toLowerCase()) {
-      case 'bug': return <BugIcon />;
-      case 'security': return <SecurityIcon />;
-      case 'performance': return <SpeedIcon />;
-      case 'technical debt': return <BuildIcon />;
-      case 'feature': return <StarIcon />;
-      case 'documentation': return <DescriptionIcon />;
-      default: return <BuildIcon />;
+      case 'high': return 'badge-high';
+      case 'medium': return 'badge-medium';
+      case 'low': return 'badge-low';
+      default: return 'badge-medium';
     }
   };
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <CircularProgress size={60} />
-          <Typography variant="h6" sx={{ mt: 3 }} color="text.secondary">
+      <div className="container-playful" style={{ minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+          <CircularProgress size={60} style={{ color: 'var(--bob-yellow-dark)' }} />
+          <h2 style={{ marginTop: '1.5rem', color: 'var(--text-secondary)' }}>
             Analyzing {moduleInfo.moduleName}...
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 1 }} color="text.secondary">
+          </h2>
+          <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>
             This may take 30-60 seconds
-          </Typography>
-        </Box>
-      </Container>
+          </p>
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Alert severity="error" sx={{ mb: 4 }}>
-          {error}
-        </Alert>
-        <Button
-          variant="contained"
-          startIcon={<ArrowBackIcon />}
+      <div className="container-playful" style={{ minHeight: '100vh' }}>
+        <div style={{ marginBottom: '2rem' }}>
+          <Alert severity="error">
+            {error}
+          </Alert>
+        </div>
+        <button
+          className="button-playful"
           onClick={() => window.location.href = '/'}
         >
-          Back to Home
-        </Button>
-      </Container>
+          ← Back to Home
+        </button>
+      </div>
     );
   }
 
   const perspectiveInfo = PERSPECTIVES[perspective];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box sx={{ mb: 4 }}>
-        <Button
-          startIcon={<ArrowBackIcon />}
+    <div className="container-playful" style={{ minHeight: '100vh' }}>
+      {/* Header Section */}
+      <div style={{ marginBottom: '2rem' }}>
+        <button
+          className="button-playful"
           onClick={() => window.location.href = '/'}
-          sx={{ mb: 2 }}
+          style={{ marginBottom: '1.5rem' }}
         >
-          Back to Modules
-        </Button>
+          ← Back
+        </button>
         
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-              <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-                {moduleInfo.moduleName}
-              </Typography>
-              <Chip
-                label={`${perspectiveInfo.icon} ${perspectiveInfo.name}`}
-                color="primary"
-                size="medium"
-              />
-            </Box>
-            <Typography variant="body1" color="text.secondary">
-              {moduleInfo.owner}/{moduleInfo.repo}
-            </Typography>
-          </Box>
-          <Button
-            variant="contained"
-            startIcon={<DownloadIcon />}
-            onClick={exportCSV}
-            disabled={tickets.length === 0}
-            size="large"
-          >
-            Export CSV
-          </Button>
-        </Box>
+        <div style={{ marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+            <h1 style={{ fontSize: '2.25rem', margin: 0 }}>
+              {moduleInfo.moduleName}
+            </h1>
+            <span style={{
+              background: 'var(--bob-sky)',
+              padding: '6px 14px',
+              borderRadius: '12px',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              border: '2px solid var(--bob-brown-light)',
+              color: 'var(--bob-brown-dark)'
+            }}>
+              {perspectiveInfo.name}
+            </span>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', margin: 0 }}>
+            {moduleInfo.owner}/{moduleInfo.repo}
+          </p>
+        </div>
         
-        <Typography variant="body2" color="text.secondary">
-          {tickets.length} ticket{tickets.length !== 1 ? 's' : ''} generated
-        </Typography>
-      </Box>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+          {tickets.length} ticket{tickets.length !== 1 ? 's' : ''} found
+        </p>
+      </div>
 
+      {/* Perspective Insights */}
       {perspectiveInsights && (
-        <Box sx={{ mb: 4 }}>
+        <div style={{ marginBottom: '2rem' }}>
           <PerspectiveInsights perspective={perspective} insights={perspectiveInsights} />
-        </Box>
+        </div>
       )}
 
-      <Stack spacing={3}>
+      {/* Tickets */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
         {tickets.map((ticket) => (
-          <Card key={ticket.id} elevation={2}>
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {getCategoryIcon(ticket.category)}
-                  <Box>
-                    <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
-                      {ticket.title}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {ticket.id}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Chip
-                    label={ticket.priority}
-                    color={getPriorityColor(ticket.priority)}
-                    size="small"
-                  />
-                  <Chip
-                    label={ticket.category}
-                    variant="outlined"
-                    size="small"
-                  />
-                </Box>
-              </Box>
+          <div key={ticket.id} className="card-playful-lavender">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div style={{ flex: 1, minWidth: '250px' }}>
+                <h3 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>
+                  {ticket.title}
+                </h3>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                  {ticket.id}
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <span className={getPriorityBadgeClass(ticket.priority)}>
+                  {ticket.priority}
+                </span>
+                <span style={{
+                  background: 'white',
+                  padding: '4px 12px',
+                  borderRadius: '12px',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  border: '2px solid var(--bob-brown-light)',
+                  color: 'var(--text-primary)'
+                }}>
+                  {ticket.category}
+                </span>
+              </div>
+            </div>
 
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                {ticket.description}
-              </Typography>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
+              {ticket.description}
+            </p>
 
-              <Divider sx={{ my: 2 }} />
+            <div style={{ 
+              borderTop: '2px solid var(--bob-brown-light)', 
+              paddingTop: '1rem',
+              marginBottom: '1rem'
+            }}>
+              <p style={{ 
+                fontSize: '0.875rem', 
+                fontWeight: 'bold', 
+                marginBottom: '0.5rem',
+                color: 'var(--bob-brown-dark)'
+              }}>
+                Assigned to:
+              </p>
+              <span style={{
+                background: 'white',
+                padding: '6px 14px',
+                borderRadius: '12px',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                border: '2px solid var(--bob-brown-light)',
+                color: 'var(--text-primary)',
+                display: 'inline-block'
+              }}>
+                {ticket.assignedTeamMember}
+              </span>
+            </div>
 
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
-                  Assigned To
-                </Typography>
-                <Chip label={ticket.assignedTeamMember} color="primary" variant="outlined" />
-              </Box>
+            <div style={{ marginBottom: '1rem' }}>
+              <p style={{ 
+                fontSize: '0.875rem', 
+                fontWeight: 'bold', 
+                marginBottom: '0.5rem',
+                color: 'var(--bob-brown-dark)'
+              }}>
+                Files:
+              </p>
+              <p style={{ 
+                fontSize: '0.875rem', 
+                color: 'var(--text-secondary)',
+                fontFamily: 'monospace',
+                wordBreak: 'break-all'
+              }}>
+                {ticket.files.join(', ')}
+              </p>
+            </div>
 
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
-                  Affected Files
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {ticket.files.map((file, index) => (
-                    <Chip
-                      key={index}
-                      label={file}
-                      size="small"
-                      variant="outlined"
-                      sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-
-              <Box>
-                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
-                  Suggested Actions
-                </Typography>
-                <List dense disablePadding>
-                  {ticket.actions.map((action, index) => (
-                    <ListItem key={index} disablePadding>
-                      <ListItemText
-                        primary={`${index + 1}. ${action}`}
-                        primaryTypographyProps={{ variant: 'body2' }}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            </CardContent>
-          </Card>
+            <div>
+              <p style={{ 
+                fontSize: '0.875rem', 
+                fontWeight: 'bold', 
+                marginBottom: '0.5rem',
+                color: 'var(--bob-brown-dark)'
+              }}>
+                Actions:
+              </p>
+              <ol style={{ margin: 0, paddingLeft: '1.25rem' }}>
+                {ticket.actions.map((action, index) => (
+                  <li key={index} style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>
+                    {action}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
         ))}
-      </Stack>
+      </div>
 
+      {/* No Tickets Message */}
       {tickets.length === 0 && (
-        <Alert severity="info">
+        <Alert severity="info" style={{ marginBottom: '2rem' }}>
           No tickets were generated for this module. This might indicate a well-maintained codebase or insufficient context.
         </Alert>
       )}
-    </Container>
+
+      {/* Export CSV Button - Centered at Bottom */}
+      {tickets.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '2rem', paddingBottom: '3rem' }}>
+          <button
+            className="button-playful button-playful-large"
+            onClick={exportCSV}
+            style={{ minWidth: '300px' }}
+          >
+            📥 Export All Tickets
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

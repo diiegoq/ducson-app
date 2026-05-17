@@ -1,9 +1,19 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Quicksand, Fredoka } from 'next/font/google';
 import './globals.css';
 import ThemeRegistry from '@/components/ThemeRegistry';
 
-const inter = Inter({ subsets: ['latin'] });
+const quicksand = Quicksand({ 
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-primary'
+});
+
+const fredoka = Fredoka({ 
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-heading'
+});
 
 export const metadata: Metadata = {
   title: 'Curious Bob - AI Repository Analysis',
@@ -16,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={`${quicksand.variable} ${fredoka.variable}`}>
+      <body className={quicksand.className}>
         <ThemeRegistry>
           {children}
         </ThemeRegistry>

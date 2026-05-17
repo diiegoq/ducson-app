@@ -1,15 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import {
-  Container,
-  Typography,
-  Box,
-  Button,
-  Alert,
-  CircularProgress
-} from '@mui/material';
-import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { Alert, CircularProgress } from '@mui/material';
 import { PerspectiveSelector } from '@/components/PerspectiveSelector';
 import { AnalysisPerspective } from '@/lib/types';
 
@@ -55,51 +47,55 @@ export default function AnalyzePage() {
 
   if (error) {
     return (
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Alert severity="error" sx={{ mb: 4 }}>
-          {error}
-        </Alert>
-        <Button
-          variant="contained"
-          startIcon={<ArrowBackIcon />}
+      <div className="container-playful" style={{ minHeight: '100vh' }}>
+        <div style={{ marginBottom: '2rem' }}>
+          <Alert severity="error">
+            {error}
+          </Alert>
+        </div>
+        <button
+          className="button-playful"
           onClick={() => router.push('/')}
         >
-          Back to Home
-        </Button>
-      </Container>
+          ← Back to Home
+        </button>
+      </div>
     );
   }
 
   if (!moduleInfo.moduleName) {
     return (
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <CircularProgress size={60} />
-        </Box>
-      </Container>
+      <div className="container-playful" style={{ minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+          <CircularProgress size={60} style={{ color: 'var(--bob-yellow-dark)' }} />
+        </div>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box sx={{ mb: 4 }}>
-        <Button
-          startIcon={<ArrowBackIcon />}
+    <div className="container-playful" style={{ minHeight: '100vh' }}>
+      {/* Back Button and Header */}
+      <div style={{ marginBottom: '2rem' }}>
+        <button
+          className="button-playful"
           onClick={() => router.push('/')}
-          sx={{ mb: 2 }}
+          style={{ marginBottom: '1.5rem' }}
         >
-          Back to Modules
-        </Button>
+          ← Back to Modules
+        </button>
         
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+        <h1 style={{ fontSize: '2.25rem', marginBottom: '0.5rem' }}>
           Analyze: {moduleInfo.moduleName}
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
           {moduleInfo.owner}/{moduleInfo.repo}
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       <PerspectiveSelector onSelect={handlePerspectiveSelect} />
-    </Container>
+    </div>
   );
 }
+
+// Made with Bob

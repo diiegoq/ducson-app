@@ -1,5 +1,5 @@
 'use client';
-import { Box, Typography, Chip, Grid, Paper, Alert } from '@mui/material';
+import { Alert } from '@mui/material';
 import MermaidDiagram from './MermaidDiagram';
 import { DatabaseSchema } from '@/lib/types';
 
@@ -10,134 +10,229 @@ interface DatabaseSectionProps {
 export default function DatabaseSection({ database }: DatabaseSectionProps) {
   if (database.type === 'none') {
     return (
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+      <div style={{ marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem' }}>
           Database Schema
-        </Typography>
+        </h2>
         <Alert severity="info">
           No database schema detected in this repository.
         </Alert>
-      </Box>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ mb: 4 }}>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+    <div style={{ marginBottom: '2rem' }}>
+      <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem' }}>
         Database Schema
-      </Typography>
+      </h2>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Type
-                </Typography>
-                <Chip label={database.type.toUpperCase()} color="primary" size="small" />
-              </Box>
-              {database.provider && (
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Provider
-                  </Typography>
-                  <Chip label={database.provider} variant="outlined" size="small" />
-                </Box>
-              )}
-              {database.orm && (
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    ORM
-                  </Typography>
-                  <Chip label={database.orm} variant="outlined" size="small" />
-                </Box>
-              )}
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Models
-                </Typography>
-                <Chip label={database.models.length} variant="outlined" size="small" />
-              </Box>
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Relationships
-                </Typography>
-                <Chip label={database.relationships.length} variant="outlined" size="small" />
-              </Box>
-            </Box>
-          </Paper>
-        </Grid>
+      {/* Database Info Summary */}
+      <div className="card-playful-peach" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+              Type
+            </p>
+            <span style={{
+              background: 'var(--bob-yellow)',
+              padding: '6px 12px',
+              borderRadius: '10px',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              border: '2px solid var(--bob-brown-light)',
+              color: 'var(--bob-brown-dark)',
+              display: 'inline-block'
+            }}>
+              {database.type.toUpperCase()}
+            </span>
+          </div>
+          {database.provider && (
+            <div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+                Provider
+              </p>
+              <span style={{
+                background: 'white',
+                padding: '6px 12px',
+                borderRadius: '10px',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                border: '2px solid var(--bob-brown-light)',
+                color: 'var(--text-primary)',
+                display: 'inline-block'
+              }}>
+                {database.provider}
+              </span>
+            </div>
+          )}
+          {database.orm && (
+            <div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+                ORM
+              </p>
+              <span style={{
+                background: 'white',
+                padding: '6px 12px',
+                borderRadius: '10px',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                border: '2px solid var(--bob-brown-light)',
+                color: 'var(--text-primary)',
+                display: 'inline-block'
+              }}>
+                {database.orm}
+              </span>
+            </div>
+          )}
+          <div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+              Models
+            </p>
+            <span style={{
+              background: 'white',
+              padding: '6px 12px',
+              borderRadius: '10px',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              border: '2px solid var(--bob-brown-light)',
+              color: 'var(--text-primary)',
+              display: 'inline-block'
+            }}>
+              {database.models.length}
+            </span>
+          </div>
+          <div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+              Relationships
+            </p>
+            <span style={{
+              background: 'white',
+              padding: '6px 12px',
+              borderRadius: '10px',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              border: '2px solid var(--bob-brown-light)',
+              color: 'var(--text-primary)',
+              display: 'inline-block'
+            }}>
+              {database.relationships.length}
+            </span>
+          </div>
+        </div>
+      </div>
 
-        {database.diagram.content && (
-          <Grid item xs={12}>
-            <MermaidDiagram
-              content={database.diagram.content}
-              description={database.diagram.description}
-              title="Entity-Relationship Diagram"
-            />
-          </Grid>
-        )}
+      {/* ER Diagram */}
+      {database.diagram.content && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          <MermaidDiagram
+            content={database.diagram.content}
+            description={database.diagram.description}
+            title="Entity-Relationship Diagram"
+          />
+        </div>
+      )}
 
-        <Grid item xs={12}>
-          <Paper elevation={2} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Models ({database.models.length})
-            </Typography>
-            <Grid container spacing={2}>
-              {database.models.map((model, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Box sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
-                    <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                      {model.name}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
-                      {model.file}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      Fields: {model.fields.length}
-                    </Typography>
-                    <Box sx={{ maxHeight: 150, overflow: 'auto' }}>
-                      {model.fields.map((field, fieldIndex) => (
-                        <Typography key={fieldIndex} variant="caption" display="block" sx={{ fontFamily: 'monospace' }}>
-                          {field.name}: {field.type}
-                          {field.required && ' *'}
-                          {field.unique && ' (unique)'}
-                        </Typography>
-                      ))}
-                    </Box>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          </Paper>
-        </Grid>
-
-        {database.relationships.length > 0 && (
-          <Grid item xs={12}>
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Relationships ({database.relationships.length})
-              </Typography>
-              <Grid container spacing={2}>
-                {database.relationships.map((rel, index) => (
-                  <Grid item xs={12} sm={6} key={index}>
-                    <Box sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
-                      <Typography variant="body2">
-                        <strong>{rel.from}</strong> → <strong>{rel.to}</strong>
-                      </Typography>
-                      <Chip label={rel.type} size="small" sx={{ my: 1 }} />
-                      <Typography variant="caption" color="text.secondary" display="block">
-                        {rel.description}
-                      </Typography>
-                    </Box>
-                  </Grid>
+      {/* Models */}
+      <div className="card-playful-white" style={{ marginBottom: '1.5rem' }}>
+        <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>
+          Models ({database.models.length})
+        </h3>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+          gap: '1rem'
+        }}>
+          {database.models.map((model, index) => (
+            <div 
+              key={index} 
+              style={{ 
+                padding: '1rem', 
+                border: '2px solid var(--bob-brown-light)', 
+                borderRadius: '12px',
+                background: 'var(--bob-yellow-light)'
+              }}
+            >
+              <h4 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                {model.name}
+              </h4>
+              <p style={{ 
+                fontSize: '0.75rem', 
+                color: 'var(--text-muted)', 
+                marginBottom: '0.75rem',
+                fontFamily: 'monospace'
+              }}>
+                {model.file}
+              </p>
+              <p style={{ fontSize: '0.875rem', marginBottom: '0.75rem' }}>
+                Fields: {model.fields.length}
+              </p>
+              <div style={{ maxHeight: '150px', overflow: 'auto' }}>
+                {model.fields.map((field, fieldIndex) => (
+                  <p 
+                    key={fieldIndex} 
+                    style={{ 
+                      fontSize: '0.75rem', 
+                      fontFamily: 'monospace',
+                      marginBottom: '0.25rem'
+                    }}
+                  >
+                    {field.name}: {field.type}
+                    {field.required && ' *'}
+                    {field.unique && ' (unique)'}
+                  </p>
                 ))}
-              </Grid>
-            </Paper>
-          </Grid>
-        )}
-      </Grid>
-    </Box>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Relationships */}
+      {database.relationships.length > 0 && (
+        <div className="card-playful-white">
+          <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>
+            Relationships ({database.relationships.length})
+          </h3>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '1rem'
+          }}>
+            {database.relationships.map((rel, index) => (
+              <div 
+                key={index} 
+                style={{ 
+                  padding: '1rem', 
+                  border: '2px solid var(--bob-brown-light)', 
+                  borderRadius: '12px',
+                  background: 'var(--bob-mint)'
+                }}
+              >
+                <p style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                  <strong>{rel.from}</strong> → <strong>{rel.to}</strong>
+                </p>
+                <span style={{
+                  background: 'white',
+                  padding: '4px 10px',
+                  borderRadius: '10px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  border: '2px solid var(--bob-brown-light)',
+                  color: 'var(--text-primary)',
+                  display: 'inline-block',
+                  marginBottom: '0.5rem'
+                }}>
+                  {rel.type}
+                </span>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                  {rel.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

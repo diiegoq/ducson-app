@@ -1,23 +1,6 @@
 'use client';
 import { useState } from 'react';
-import {
-  Container,
-  TextField,
-  Button,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  Box,
-  Grid,
-  CircularProgress,
-  Alert,
-  Chip,
-  Tabs,
-  Tab,
-  Paper
-} from '@mui/material';
-import { GitHub as GitHubIcon, Folder as FolderIcon, Architecture as ArchitectureIcon, Storage as StorageIcon, Code as CodeIcon } from '@mui/icons-material';
+import { CircularProgress, Alert } from '@mui/material';
 import ArchitectureSection from '@/components/ArchitectureSection';
 import DatabaseSection from '@/components/DatabaseSection';
 import TechStackSection from '@/components/TechStackSection';
@@ -87,174 +70,206 @@ export default function Home() {
     }
   };
   
+  const tabs = [
+    { id: 0, label: 'Modules', icon: '📁' },
+    { id: 1, label: 'Architecture', icon: '🏗️' },
+    { id: 2, label: 'Database', icon: '💾' },
+    { id: 3, label: 'Tech Stack', icon: '⚙️' }
+  ];
+  
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Curious Bob
-        </Typography>
-        <Typography variant="h6" color="text.secondary" gutterBottom>
-          AI-powered repository analysis and ticket generation
-        </Typography>
-      </Box>
+    <div style={{ minHeight: '100vh' }}>
+      {/* Hero Section - Full Width */}
+      <div style={{
+        background: 'linear-gradient(180deg, var(--bob-yellow-light) 0%, var(--background-primary) 100%)',
+        padding: '3rem 1rem',
+        marginBottom: '2rem'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
+          <h1 style={{ fontSize: '3rem', marginBottom: '0.5rem', fontFamily: 'var(--font-heading)' }}>
+            Curious Bob
+          </h1>
+          <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+            Your Friendly Repository Guide
+          </p>
+          
+          {/* URL Input and Button */}
+          <div style={{ display: 'flex', gap: '1rem', maxWidth: '800px', margin: '0 auto', flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            className="input-playful"
+            placeholder="🔗 Paste GitHub URL here..."
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            onKeyPress={handleKeyPress}
+            disabled={loading}
+            style={{ flex: 1, minWidth: '300px' }}
+          />
+          <button
+            className="button-playful button-playful-large"
+            onClick={handleAnalyze}
+            disabled={loading || !url.trim()}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Analyze Repository'}
+          </button>
+        </div>
+        </div>
+      </div>
       
-      <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
-        <TextField
-          fullWidth
-          placeholder="https://github.com/vercel/next.js"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          onKeyPress={handleKeyPress}
-          variant="outlined"
-          disabled={loading}
-          InputProps={{
-            startAdornment: <GitHubIcon sx={{ mr: 1, color: 'text.secondary' }} />
-          }}
-        />
-        <Button
-          variant="contained"
-          onClick={handleAnalyze}
-          disabled={loading || !url.trim()}
-          sx={{ minWidth: 140, height: 56 }}
-          size="large"
-        >
-          {loading ? <CircularProgress size={24} color="inherit" /> : 'Analyze'}
-        </Button>
-      </Box>
-      
-      {error && (
-        <Alert severity="error" sx={{ mb: 4 }} onClose={() => setError('')}>
-          {error}
-        </Alert>
+      {/* Content Container */}
+      <div className="container-playful">
+        {/* Error Alert */}
+        {error && (
+          <div style={{ marginBottom: '2rem' }}>
+          <Alert severity="error" onClose={() => setError('')}>
+            {error}
+          </Alert>
+        </div>
       )}
       
+      {/* Repository Info Card */}
       {repoInfo && (
-        <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Box>
-              <Typography variant="h5" gutterBottom>
+        <div className="card-playful-peach" style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ flex: 1, minWidth: '250px' }}>
+              <h2 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>
                 {repoInfo.owner}/{repoInfo.repo}
-              </Typography>
+              </h2>
               {repoInfo.description && (
-                <Typography variant="body1" color="text.secondary">
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
                   {repoInfo.description}
-                </Typography>
+                </p>
               )}
-            </Box>
-            <Chip
-              icon={<GitHubIcon />}
-              label={`⭐ ${repoInfo.stars.toLocaleString()}`}
-              variant="outlined"
-            />
-          </Box>
+            </div>
+            <div style={{ 
+              background: 'white', 
+              padding: '8px 16px', 
+              borderRadius: '12px',
+              border: '2px solid var(--bob-brown-light)',
+              fontWeight: 600
+            }}>
+              {repoInfo.stars.toLocaleString()} stars
+            </div>
+          </div>
 
           {overviewData?.readme && (
-            <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-              <Typography variant="body2" color="text.secondary">
+            <div style={{ 
+              marginTop: '1rem', 
+              padding: '1rem', 
+              background: 'rgba(255, 255, 255, 0.5)', 
+              borderRadius: '12px',
+              border: '2px solid var(--bob-brown-light)'
+            }}>
+              <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
                 {overviewData.readme.summary}
-              </Typography>
-            </Box>
+              </p>
+            </div>
           )}
-        </Paper>
+        </div>
       )}
 
+      {/* Tabs and Content */}
       {overviewData && (
-        <Box sx={{ mb: 4 }}>
-          <Tabs
-            value={activeTab}
-            onChange={(_, newValue) => setActiveTab(newValue)}
-            sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}
-          >
-            <Tab icon={<FolderIcon />} label="Modules" />
-            <Tab icon={<ArchitectureIcon />} label="Architecture" />
-            <Tab icon={<StorageIcon />} label="Database" />
-            <Tab icon={<CodeIcon />} label="Tech Stack" />
-          </Tabs>
+        <div style={{ marginBottom: '2rem' }}>
+          {/* Tab Navigation */}
+          <div style={{ 
+            display: 'flex', 
+            gap: '0.5rem', 
+            marginBottom: '-2px',
+            flexWrap: 'wrap',
+            borderBottom: '3px solid var(--bob-brown-light)'
+          }}>
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                className={`tab-playful ${activeTab === tab.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+                style={{ border: '3px solid var(--bob-brown-light)', borderBottom: 'none' }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-          {activeTab === 0 && modules.length > 0 && (
-            <>
-              <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-                Detected Modules ({modules.length})
-              </Typography>
-              <Grid container spacing={3}>
-                {modules.map(module => (
-                  <Grid item xs={12} sm={6} md={4} key={module.id}>
-                    <Card
-                      elevation={2}
-                      sx={{
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        transition: 'transform 0.2s, box-shadow 0.2s',
-                        '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: 4
-                        }
-                      }}
-                    >
-                      <CardContent sx={{ flexGrow: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                          <FolderIcon sx={{ mr: 1, color: 'primary.main' }} />
-                          <Typography variant="h6" component="h3">
-                            {module.name}
-                          </Typography>
-                        </Box>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                          {module.description}
-                        </Typography>
-                        <Chip
-                          label={`${module.fileCount} files`}
-                          size="small"
-                          variant="outlined"
-                        />
-                      </CardContent>
-                      <CardActions sx={{ p: 2, pt: 0 }}>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          onClick={() => {
-                            const params = new URLSearchParams({
-                              owner: repoInfo?.owner || '',
-                              repo: repoInfo?.repo || '',
-                              moduleId: module.id,
-                              moduleName: module.name,
-                              moduleFiles: JSON.stringify(module.files)
-                            });
-                            window.location.href = `/analyze?${params.toString()}`;
-                          }}
-                        >
-                          Analyze Module
-                        </Button>
-                      </CardActions>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </>
-          )}
+          {/* Tab Content */}
+          <div style={{ paddingTop: '2rem' }}>
+            {activeTab === 0 && modules.length > 0 && (
+              <>
+                <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem' }}>
+                  Detected Modules ({modules.length})
+                </h2>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                  gap: '1.5rem'
+                }}>
+                  {modules.map(module => (
+                    <div key={module.id} className="card-playful-mint">
+                      <h3 style={{ fontSize: '1.25rem', marginBottom: '0.75rem' }}>
+                        {module.name}
+                      </h3>
+                      <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem', minHeight: '3rem' }}>
+                        {module.description}
+                      </p>
+                      <div style={{ 
+                        display: 'inline-block',
+                        background: 'white',
+                        padding: '4px 12px',
+                        borderRadius: '12px',
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        marginBottom: '1rem',
+                        border: '2px solid var(--bob-brown-light)'
+                      }}>
+                        {module.fileCount} files
+                      </div>
+                      <button
+                        className="button-playful"
+                        style={{ width: '100%' }}
+                        onClick={() => {
+                          const params = new URLSearchParams({
+                            owner: repoInfo?.owner || '',
+                            repo: repoInfo?.repo || '',
+                            moduleId: module.id,
+                            moduleName: module.name,
+                            moduleFiles: JSON.stringify(module.files)
+                          });
+                          window.location.href = `/analyze?${params.toString()}`;
+                        }}
+                      >
+                        Analyze Module
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
-          {activeTab === 1 && overviewData.architecture && (
-            <ArchitectureSection architecture={overviewData.architecture} />
-          )}
+            {activeTab === 1 && overviewData.architecture && (
+              <ArchitectureSection architecture={overviewData.architecture} />
+            )}
 
-          {activeTab === 2 && overviewData.database && (
-            <DatabaseSection database={overviewData.database} />
-          )}
+            {activeTab === 2 && overviewData.database && (
+              <DatabaseSection database={overviewData.database} />
+            )}
 
-          {activeTab === 3 && overviewData.techStack && (
-            <TechStackSection techStack={overviewData.techStack} />
-          )}
-        </Box>
+            {activeTab === 3 && overviewData.techStack && (
+              <TechStackSection techStack={overviewData.techStack} />
+            )}
+          </div>
+        </div>
       )}
       
-      {loading && (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <CircularProgress size={60} />
-          <Typography variant="body1" sx={{ mt: 2 }} color="text.secondary">
-            Analyzing repository structure...
-          </Typography>
-        </Box>
-      )}
-    </Container>
+        {/* Loading State */}
+        {loading && (
+          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+            <CircularProgress size={60} style={{ color: 'var(--bob-yellow-dark)' }} />
+            <p style={{ marginTop: '1rem', color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
+              Analyzing repository structure...
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

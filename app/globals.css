@@ -4,6 +4,47 @@
 
 @layer base {
   :root {
+    /* Curious Bob Color Palette - Curious George Inspired */
+    
+    /* Warm Yellows - Main brand color */
+    --bob-yellow-light: #FFF9E6;
+    --bob-yellow: #FFE066;
+    --bob-yellow-dark: #F4C430;
+    
+    /* Warm Browns - Secondary/text */
+    --bob-brown-light: #D4A574;
+    --bob-brown: #8B6F47;
+    --bob-brown-dark: #5C4033;
+    
+    /* Playful Accents */
+    --bob-peach: #FFD4B8;
+    --bob-mint: #C8E6C9;
+    --bob-lavender: #E1D5E7;
+    --bob-coral: #FFB3BA;
+    --bob-sky: #B4D7F1;
+    
+    /* Backgrounds */
+    --background-primary: #FFFEF9;
+    --background-card: #FFF9E6;
+    --background-hover: #FFE066;
+    
+    /* Text */
+    --text-primary: #5C4033;
+    --text-secondary: #8B6F47;
+    --text-muted: #A89080;
+    
+    /* Interactive */
+    --button-primary: #FFE066;
+    --button-hover: #F4C430;
+    --button-text: #5C4033;
+    
+    /* Status */
+    --success: #C8E6C9;
+    --warning: #FFB3BA;
+    --error: #FF8A80;
+    --info: #B4D7F1;
+    
+    /* Legacy shadcn variables (kept for compatibility) */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -24,38 +65,6 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
   }
 }
 
@@ -63,7 +72,249 @@
   * {
     @apply border-border;
   }
+  
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    font-family: var(--font-primary, 'Quicksand', sans-serif);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading, 'Fredoka', sans-serif);
+    font-weight: 700;
+    color: var(--bob-brown-dark);
+  }
+}
+
+@layer components {
+  /* Playful Card Styles */
+  .card-playful {
+    background: var(--background-card);
+    border: 3px solid var(--bob-brown-light);
+    border-radius: 16px;
+    box-shadow: 4px 4px 0px var(--bob-brown-light);
+    transition: all 0.2s ease;
+    padding: 1.5rem;
+  }
+  
+  .card-playful:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 6px 0px var(--bob-brown-light);
+  }
+  
+  .card-playful-white {
+    background: white;
+    border: 3px solid var(--bob-brown-light);
+    border-radius: 16px;
+    box-shadow: 4px 4px 0px var(--bob-brown-light);
+    transition: all 0.2s ease;
+    padding: 1.5rem;
+  }
+  
+  .card-playful-white:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 6px 0px var(--bob-brown-light);
+  }
+  
+  .card-playful-peach {
+    background: var(--bob-peach);
+    border: 3px solid var(--bob-brown-light);
+    border-radius: 16px;
+    box-shadow: 4px 4px 0px var(--bob-brown-light);
+    transition: all 0.2s ease;
+    padding: 1.5rem;
+  }
+  
+  .card-playful-mint {
+    background: var(--bob-mint);
+    border: 3px solid var(--bob-brown-light);
+    border-radius: 16px;
+    box-shadow: 4px 4px 0px var(--bob-brown-light);
+    transition: all 0.2s ease;
+    padding: 1.5rem;
+  }
+  
+  .card-playful-lavender {
+    background: var(--bob-lavender);
+    border: 3px solid var(--bob-brown-light);
+    border-radius: 16px;
+    box-shadow: 4px 4px 0px var(--bob-brown-light);
+    transition: all 0.2s ease;
+    padding: 1.5rem;
+  }
+  
+  /* Playful Button Styles */
+  .button-playful {
+    background: var(--bob-yellow);
+    color: var(--bob-brown-dark);
+    border: 2px solid var(--bob-brown-light);
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 2px 2px 0px var(--bob-brown-light);
+  }
+  
+  .button-playful:hover:not(:disabled) {
+    background: var(--bob-yellow-dark);
+    transform: scale(1.05);
+    box-shadow: 3px 3px 0px var(--bob-brown-light);
+  }
+  
+  .button-playful:active:not(:disabled) {
+    transform: scale(0.98);
+    box-shadow: 1px 1px 0px var(--bob-brown-light);
+  }
+  
+  .button-playful:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .button-playful-large {
+    padding: 16px 32px;
+    font-size: 1.125rem;
+    min-width: 140px;
+  }
+  
+  /* Playful Input Styles */
+  .input-playful {
+    width: 100%;
+    padding: 14px 18px;
+    border: 3px solid var(--bob-brown-light);
+    border-radius: 12px;
+    background: white;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    outline: none;
+  }
+  
+  .input-playful::placeholder {
+    color: var(--text-muted);
+  }
+  
+  .input-playful:focus {
+    border-color: var(--bob-yellow-dark);
+    box-shadow: 0 0 0 3px rgba(255, 224, 102, 0.3);
+  }
+  
+  .input-playful:disabled {
+    background: var(--bob-yellow-light);
+    cursor: not-allowed;
+  }
+  
+  /* Priority Badges */
+  .badge-high {
+    background: var(--bob-coral);
+    color: var(--bob-brown-dark);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+  
+  .badge-medium {
+    background: var(--bob-peach);
+    color: var(--bob-brown-dark);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+  
+  .badge-low {
+    background: var(--bob-mint);
+    color: var(--bob-brown-dark);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+  
+  /* Tab Styles */
+  .tab-playful {
+    padding: 12px 24px;
+    border: 2px solid var(--bob-brown-light);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    background: white;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+  }
+  
+  .tab-playful:hover {
+    background: var(--bob-yellow-light);
+  }
+  
+  .tab-playful.active {
+    background: var(--bob-yellow);
+    color: var(--bob-brown-dark);
+  }
+  
+  /* Container */
+  .container-playful {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  /* Hero Section */
+  .hero-playful {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: linear-gradient(180deg, var(--bob-yellow-light) 0%, var(--background-primary) 100%);
+    border-radius: 24px;
+    margin-bottom: 2rem;
+  }
+  
+  /* Selection State for Cards */
+  .card-selected {
+    background: var(--bob-yellow);
+    border: 4px solid var(--bob-brown-dark);
+    box-shadow: 6px 6px 0px var(--bob-brown-dark);
+  }
+  
+  .card-unselected {
+    background: white;
+    border: 2px solid var(--bob-brown-light);
+    box-shadow: 3px 3px 0px var(--bob-brown-light);
+  }
+}
+
+@layer utilities {
+  .text-playful-primary {
+    color: var(--text-primary);
+  }
+  
+  .text-playful-secondary {
+    color: var(--text-secondary);
+  }
+  
+  .text-playful-muted {
+    color: var(--text-muted);
+  }
+  
+  .bg-playful-yellow {
+    background-color: var(--bob-yellow);
+  }
+  
+  .bg-playful-peach {
+    background-color: var(--bob-peach);
+  }
+  
+  .bg-playful-mint {
+    background-color: var(--bob-mint);
+  }
+  
+  .bg-playful-lavender {
+    background-color: var(--bob-lavender);
   }
 }
