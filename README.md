@@ -9,12 +9,6 @@ Transform legacy codebases into actionable engineering plans. Curious Bob analyz
 
 ---
 
-## 🚀 Live Demo
-
-**[Coming Soon - Will be deployed to Vercel]**
-
----
-
 ## 📋 Table of Contents
 
 - [Problem Statement](#-problem-statement)
