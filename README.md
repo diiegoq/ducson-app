@@ -1,4 +1,4 @@
-# Curious Bob 🎨
+# Curious Bob
 
 **AI-Powered Repository Analysis & Engineering Ticket Generator**
 
