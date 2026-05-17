@@ -113,6 +113,10 @@ try {
 }
 ```
 
+### Comments
+
+DO NOT WRITE COMMENTS. DO NOT WRITE "Made with Bob"
+
 ### Testing Strategy
 
 For hackathon MVP, focus on:
