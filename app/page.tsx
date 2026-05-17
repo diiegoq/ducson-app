@@ -78,7 +78,7 @@ export default function Home() {
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
       <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
+        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
           Curious Bob
         </Typography>
         <Typography variant="h6" color="text.secondary" gutterBottom>
