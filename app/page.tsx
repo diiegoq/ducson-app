@@ -12,9 +12,16 @@ import {
   Grid,
   CircularProgress,
   Alert,
-  Chip
+  Chip,
+  Tabs,
+  Tab,
+  Paper
 } from '@mui/material';
-import { GitHub as GitHubIcon, Folder as FolderIcon } from '@mui/icons-material';
+import { GitHub as GitHubIcon, Folder as FolderIcon, Architecture as ArchitectureIcon, Storage as StorageIcon, Code as CodeIcon } from '@mui/icons-material';
+import ArchitectureSection from '@/components/ArchitectureSection';
+import DatabaseSection from '@/components/DatabaseSection';
+import TechStackSection from '@/components/TechStackSection';
+import { EnhancedOverviewResponse } from '@/lib/types';
 
 interface Module {
   id: string;
@@ -29,12 +36,16 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [modules, setModules] = useState<Module[]>([]);
-  const [repoInfo, setRepoInfo] = useState<{ owner: string; repo: string; description: string } | null>(null);
+  const [repoInfo, setRepoInfo] = useState<{ owner: string; repo: string; description: string; stars: number } | null>(null);
+  const [overviewData, setOverviewData] = useState<EnhancedOverviewResponse | null>(null);
+  const [activeTab, setActiveTab] = useState(0);
   
   const handleAnalyze = async () => {
     setError('');
     setModules([]);
     setRepoInfo(null);
+    setOverviewData(null);
+    setActiveTab(0);
     
     const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
     if (!match) {
@@ -62,6 +73,7 @@ export default function Home() {
       
       setModules(data.modules || []);
       setRepoInfo(data.repository || null);
+      setOverviewData(data);
     } catch (err: any) {
       setError(err.message || 'Failed to analyze repository');
     } finally {
@@ -117,78 +129,122 @@ export default function Home() {
       )}
       
       {repoInfo && (
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h5" gutterBottom>
-            {repoInfo.owner}/{repoInfo.repo}
-          </Typography>
-          {repoInfo.description && (
-            <Typography variant="body1" color="text.secondary">
-              {repoInfo.description}
-            </Typography>
+        <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box>
+              <Typography variant="h5" gutterBottom>
+                {repoInfo.owner}/{repoInfo.repo}
+              </Typography>
+              {repoInfo.description && (
+                <Typography variant="body1" color="text.secondary">
+                  {repoInfo.description}
+                </Typography>
+              )}
+            </Box>
+            <Chip
+              icon={<GitHubIcon />}
+              label={`⭐ ${repoInfo.stars.toLocaleString()}`}
+              variant="outlined"
+            />
+          </Box>
+
+          {overviewData?.readme && (
+            <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                {overviewData.readme.summary}
+              </Typography>
+            </Box>
           )}
-        </Box>
+        </Paper>
       )}
-      
-      {modules.length > 0 && (
-        <>
-          <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-            Detected Modules ({modules.length})
-          </Typography>
-          <Grid container spacing={3}>
-            {modules.map(module => (
-              <Grid item xs={12} sm={6} md={4} key={module.id}>
-                <Card 
-                  elevation={2}
-                  sx={{ 
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: 4
-                    }
-                  }}
-                >
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <FolderIcon sx={{ mr: 1, color: 'primary.main' }} />
-                      <Typography variant="h6" component="h3">
-                        {module.name}
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {module.description}
-                    </Typography>
-                    <Chip 
-                      label={`${module.fileCount} files`} 
-                      size="small" 
-                      variant="outlined"
-                    />
-                  </CardContent>
-                  <CardActions sx={{ p: 2, pt: 0 }}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      onClick={() => {
-                        const params = new URLSearchParams({
-                          owner: repoInfo?.owner || '',
-                          repo: repoInfo?.repo || '',
-                          moduleId: module.id,
-                          moduleName: module.name,
-                          moduleFiles: JSON.stringify(module.files)
-                        });
-                        window.location.href = `/results?${params.toString()}`;
+
+      {overviewData && (
+        <Box sx={{ mb: 4 }}>
+          <Tabs
+            value={activeTab}
+            onChange={(_, newValue) => setActiveTab(newValue)}
+            sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}
+          >
+            <Tab icon={<FolderIcon />} label="Modules" />
+            <Tab icon={<ArchitectureIcon />} label="Architecture" />
+            <Tab icon={<StorageIcon />} label="Database" />
+            <Tab icon={<CodeIcon />} label="Tech Stack" />
+          </Tabs>
+
+          {activeTab === 0 && modules.length > 0 && (
+            <>
+              <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+                Detected Modules ({modules.length})
+              </Typography>
+              <Grid container spacing={3}>
+                {modules.map(module => (
+                  <Grid item xs={12} sm={6} md={4} key={module.id}>
+                    <Card
+                      elevation={2}
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        transition: 'transform 0.2s, box-shadow 0.2s',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: 4
+                        }
                       }}
                     >
-                      Analyze Module
-                    </Button>
-                  </CardActions>
-                </Card>
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <FolderIcon sx={{ mr: 1, color: 'primary.main' }} />
+                          <Typography variant="h6" component="h3">
+                            {module.name}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          {module.description}
+                        </Typography>
+                        <Chip
+                          label={`${module.fileCount} files`}
+                          size="small"
+                          variant="outlined"
+                        />
+                      </CardContent>
+                      <CardActions sx={{ p: 2, pt: 0 }}>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          onClick={() => {
+                            const params = new URLSearchParams({
+                              owner: repoInfo?.owner || '',
+                              repo: repoInfo?.repo || '',
+                              moduleId: module.id,
+                              moduleName: module.name,
+                              moduleFiles: JSON.stringify(module.files)
+                            });
+                            window.location.href = `/results?${params.toString()}`;
+                          }}
+                        >
+                          Analyze Module
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </>
+            </>
+          )}
+
+          {activeTab === 1 && overviewData.architecture && (
+            <ArchitectureSection architecture={overviewData.architecture} />
+          )}
+
+          {activeTab === 2 && overviewData.database && (
+            <DatabaseSection database={overviewData.database} />
+          )}
+
+          {activeTab === 3 && overviewData.techStack && (
+            <TechStackSection techStack={overviewData.techStack} />
+          )}
+        </Box>
       )}
       
       {loading && (

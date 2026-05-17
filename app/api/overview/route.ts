@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getRepoOverview } from '@/lib/github';
-import { analyzeOverview } from '@/lib/llm';
+import { analyzeOverview, analyzeArchitecture, analyzeDatabaseSchema, analyzeReadme } from '@/lib/llm';
 
 export async function POST(request: Request) {
   try {
@@ -13,9 +13,31 @@ export async function POST(request: Request) {
       );
     }
     
-    const { repoData, files, packageJson } = await getRepoOverview(owner, repo);
+    const { repoData, files, packageJson, readme, databaseFiles, configFiles } = await getRepoOverview(owner, repo);
     
-    const analysis = await analyzeOverview(repoData, files, packageJson);
+    const [moduleAnalysis, architectureAnalysis, databaseSchema, readmeAnalysis] = await Promise.all([
+      analyzeOverview(repoData, files, packageJson),
+      analyzeArchitecture(repoData, files, configFiles, readme),
+      analyzeDatabaseSchema(databaseFiles),
+      analyzeReadme(readme)
+    ]);
+    
+    const fileTreeAnalysis = {
+      tree: {
+        name: repo,
+        path: '/',
+        type: 'directory' as const,
+        children: []
+      },
+      statistics: {
+        totalFiles: files.length,
+        totalDirectories: 0,
+        totalLines: 0,
+        languageBreakdown: architectureAnalysis.techStack.languages
+      },
+      criticalFiles: configFiles.map(f => f.path),
+      configFiles: configFiles.map(f => f.path)
+    };
     
     return NextResponse.json({
       repository: {
@@ -26,9 +48,14 @@ export async function POST(request: Request) {
         stars: repoData.stargazers_count,
         url: repoData.html_url
       },
-      modules: analysis.modules,
+      modules: moduleAnalysis.modules,
       totalFiles: files.length,
-      hasPackageJson: !!packageJson
+      hasPackageJson: !!packageJson,
+      architecture: architectureAnalysis.architecture,
+      fileTree: fileTreeAnalysis,
+      database: databaseSchema,
+      techStack: architectureAnalysis.techStack,
+      readme: readmeAnalysis
     });
   } catch (error: any) {
     console.error('Overview API error:', error);
