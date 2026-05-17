@@ -25,5 +25,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-// Made with Bob

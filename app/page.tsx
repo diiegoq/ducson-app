@@ -202,5 +202,3 @@ export default function Home() {
     </Container>
   );
 }
-
-// Made with Bob

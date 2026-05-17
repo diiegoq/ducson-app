@@ -76,5 +76,3 @@ export async function getFileContents(owner: string, repo: string, paths: string
   );
   return contents.filter((item): item is { path: string; content: string } => item !== null);
 }
-
-// Made with Bob
