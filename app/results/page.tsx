@@ -1,11 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CircularProgress, Alert } from '@mui/material';
 import { Ticket, AnalysisPerspective, PERSPECTIVES, PerspectiveInsights as PerspectiveInsightsType } from '@/lib/types';
 import { PerspectiveInsights } from '@/components/PerspectiveInsights';
 
-export default function Results() {
+function ResultsContent() {
   const searchParams = useSearchParams();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -314,5 +314,22 @@ export default function Results() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Results() {
+  return (
+    <Suspense fallback={
+      <div className="container-playful" style={{ minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+          <CircularProgress size={60} style={{ color: 'var(--bob-yellow-dark)' }} />
+          <h2 style={{ marginTop: '1.5rem', color: 'var(--text-secondary)' }}>
+            Loading...
+          </h2>
+        </div>
+      </div>
+    }>
+      <ResultsContent />
+    </Suspense>
   );
 }
