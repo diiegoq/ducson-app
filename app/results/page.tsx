@@ -27,13 +27,16 @@ import {
   Star as StarIcon,
   Description as DescriptionIcon
 } from '@mui/icons-material';
-import { Ticket } from '@/lib/types';
+import { Ticket, AnalysisPerspective, PERSPECTIVES, PerspectiveInsights as PerspectiveInsightsType } from '@/lib/types';
+import { PerspectiveInsights } from '@/components/PerspectiveInsights';
 
 export default function Results() {
   const searchParams = useSearchParams();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [perspective, setPerspective] = useState<AnalysisPerspective>('technical-debt');
+  const [perspectiveInsights, setPerspectiveInsights] = useState<PerspectiveInsightsType | null>(null);
   const [moduleInfo, setModuleInfo] = useState({
     owner: '',
     repo: '',
@@ -46,6 +49,7 @@ export default function Results() {
     const moduleId = searchParams.get('moduleId');
     const moduleName = searchParams.get('moduleName');
     const moduleFilesStr = searchParams.get('moduleFiles');
+    const perspectiveParam = searchParams.get('perspective') as AnalysisPerspective;
 
     if (!owner || !repo || !moduleId || !moduleName || !moduleFilesStr) {
       setError('Missing required parameters. Please start from the home page.');
@@ -54,6 +58,9 @@ export default function Results() {
     }
 
     setModuleInfo({ owner, repo, moduleName });
+    
+    const selectedPerspective = perspectiveParam || 'technical-debt';
+    setPerspective(selectedPerspective);
 
     let moduleFiles: string[] = [];
     try {
@@ -64,7 +71,6 @@ export default function Results() {
       return;
     }
 
-    // Fetch module analysis
     fetch('/api/module', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -75,7 +81,8 @@ export default function Results() {
           id: moduleId,
           name: moduleName,
           files: moduleFiles
-        }
+        },
+        perspective: selectedPerspective
       })
     })
       .then(res => res.json())
@@ -84,6 +91,7 @@ export default function Results() {
           throw new Error(data.error);
         }
         setTickets(data.tickets || []);
+        setPerspectiveInsights(data.perspectiveInsights || null);
         setLoading(false);
       })
       .catch(err => {
@@ -172,6 +180,8 @@ export default function Results() {
     );
   }
 
+  const perspectiveInfo = PERSPECTIVES[perspective];
+
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
       <Box sx={{ mb: 4 }}>
@@ -185,9 +195,16 @@ export default function Results() {
         
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Box>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-              {moduleInfo.moduleName}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+              <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+                {moduleInfo.moduleName}
+              </Typography>
+              <Chip
+                label={`${perspectiveInfo.icon} ${perspectiveInfo.name}`}
+                color="primary"
+                size="medium"
+              />
+            </Box>
             <Typography variant="body1" color="text.secondary">
               {moduleInfo.owner}/{moduleInfo.repo}
             </Typography>
@@ -207,6 +224,12 @@ export default function Results() {
           {tickets.length} ticket{tickets.length !== 1 ? 's' : ''} generated
         </Typography>
       </Box>
+
+      {perspectiveInsights && (
+        <Box sx={{ mb: 4 }}>
+          <PerspectiveInsights perspective={perspective} insights={perspectiveInsights} />
+        </Box>
+      )}
 
       <Stack spacing={3}>
         {tickets.map((ticket) => (

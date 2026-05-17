@@ -220,7 +220,7 @@ export default function Home() {
                               moduleName: module.name,
                               moduleFiles: JSON.stringify(module.files)
                             });
-                            window.location.href = `/results?${params.toString()}`;
+                            window.location.href = `/analyze?${params.toString()}`;
                           }}
                         >
                           Analyze Module

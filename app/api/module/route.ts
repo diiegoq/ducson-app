@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getFileContents } from '@/lib/github';
 import { analyzeModule } from '@/lib/llm';
-import { DEFAULT_TEAM } from '@/lib/types';
+import { DEFAULT_TEAM, AnalysisPerspective, PERSPECTIVES } from '@/lib/types';
 
 export async function POST(request: Request) {
   try {
-    const { owner, repo, module } = await request.json();
+    const { owner, repo, module, perspective } = await request.json();
     
-    // Validate input
     if (!owner || !repo || !module) {
       return NextResponse.json(
         { error: 'Missing required fields: owner, repo, module' },
@@ -22,7 +21,15 @@ export async function POST(request: Request) {
       );
     }
     
-    // Fetch file contents (max 20 files)
+    const selectedPerspective: AnalysisPerspective = perspective || 'technical-debt';
+    
+    if (perspective && !PERSPECTIVES[perspective as AnalysisPerspective]) {
+      return NextResponse.json(
+        { error: `Invalid perspective: ${perspective}. Valid perspectives: ${Object.keys(PERSPECTIVES).join(', ')}` },
+        { status: 400 }
+      );
+    }
+    
     const files = await getFileContents(owner, repo, module.files);
     
     if (files.length === 0) {
@@ -32,8 +39,10 @@ export async function POST(request: Request) {
       );
     }
     
-    // Analyze module with LLM
-    const analysis = await analyzeModule(module.name, files, DEFAULT_TEAM);
+    const perspectiveInfo = PERSPECTIVES[selectedPerspective];
+    const team = perspectiveInfo.team;
+    
+    const analysis = await analyzeModule(module.name, files, team, selectedPerspective);
     
     return NextResponse.json(analysis);
   } catch (error: any) {

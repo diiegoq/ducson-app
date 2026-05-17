@@ -1,4 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { AnalysisPerspective, PERSPECTIVES } from './types';
+import { getPerspectivePrompt } from './perspectives';
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 const model = genAI.getGenerativeModel({
@@ -73,55 +75,21 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanations, 
   }
 }
 
-export async function analyzeModule(moduleName: string, files: any[], team: string[]) {
-  const prompt = `
-Analyze this code module and generate 3-5 actionable engineering tickets.
-
-Module: ${moduleName}
-Team Members: ${team.join(', ')}
-
-Files in Module:
-${files.map(f => `
-File: ${f.path}
-Content (first 500 chars):
-${f.content.slice(0, 500)}
-`).join('\n---\n')}
-
-Instructions:
-1. Identify technical debt, bugs, security issues, performance problems, or missing features
-2. Create 3-5 specific, actionable tickets
-3. Assign each ticket to the most appropriate team member
-4. Prioritize tickets (High, Medium, Low)
-5. Include specific file references and concrete action items
-
-Categories: Bug, Security, Performance, Technical Debt, Feature, Documentation
-
-Return ONLY valid JSON with this exact structure (no markdown, no explanations, no code blocks):
-{
-  "tickets": [
-    {
-      "id": "CB-001",
-      "title": "Fix authentication token expiration handling",
-      "category": "Bug",
-      "priority": "High",
-      "assignedTeamMember": "Senior SWE",
-      "description": "The authentication module doesn't properly handle expired tokens, causing users to be logged out unexpectedly. Need to implement refresh token logic and graceful error handling.",
-      "files": ["src/auth/login.ts", "src/auth/token.ts"],
-      "actions": [
-        "Implement token refresh mechanism",
-        "Add expiration checks before API calls",
-        "Update error handling for 401 responses"
-      ]
-    }
-  ]
-}
-`;
+export async function analyzeModule(
+  moduleName: string,
+  files: any[],
+  team: string[],
+  perspective: AnalysisPerspective = 'technical-debt'
+) {
+  const perspectiveInfo = PERSPECTIVES[perspective];
+  const perspectiveTeam = perspectiveInfo.team;
+  
+  const prompt = getPerspectivePrompt(perspective, moduleName, files);
 
   try {
     const result = await model.generateContent(prompt);
     const response = result.response.text();
     
-    // Clean response (remove markdown if present)
     const jsonText = response
       .replace(/```json\n?/g, '')
       .replace(/```\n?/g, '')
@@ -129,7 +97,6 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanations, 
     
     const parsed = JSON.parse(jsonText);
     
-    // Validate response structure
     if (!parsed.tickets || !Array.isArray(parsed.tickets)) {
       throw new Error('Invalid response structure: missing tickets array');
     }
@@ -138,7 +105,10 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanations, 
       throw new Error('No tickets generated for this module');
     }
     
-    // Validate each ticket has required fields
+    if (!parsed.perspectiveInsights) {
+      throw new Error('Invalid response structure: missing perspectiveInsights');
+    }
+    
     parsed.tickets.forEach((ticket: any, index: number) => {
       const required = ['id', 'title', 'category', 'priority', 'assignedTeamMember', 'description', 'files', 'actions'];
       const missing = required.filter(field => !ticket[field]);
@@ -147,7 +117,10 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanations, 
       }
     });
     
-    return parsed;
+    return {
+      ...parsed,
+      perspective
+    };
   } catch (error: any) {
     if (error instanceof SyntaxError) {
       throw new Error('Failed to parse LLM response as JSON. Please try again.');
