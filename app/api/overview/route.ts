@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getRepoOverview } from '@/lib/github';
+import { analyzeOverview } from '@/lib/llm';
 
 export async function POST(request: Request) {
   try {
@@ -14,45 +15,41 @@ export async function POST(request: Request) {
     
     const { repoData, files, packageJson } = await getRepoOverview(owner, repo);
     
-    const mockModules = [
-      {
-        id: 'core-module',
-        name: 'Core Module',
-        description: 'Main application logic and core functionality',
-        files: files.filter(f => f.includes('src/') || f.includes('lib/')).slice(0, 15),
-        fileCount: files.filter(f => f.includes('src/') || f.includes('lib/')).length
-      },
-      {
-        id: 'api-module',
-        name: 'API Module',
-        description: 'API routes and backend services',
-        files: files.filter(f => f.includes('api/')).slice(0, 15),
-        fileCount: files.filter(f => f.includes('api/')).length
-      },
-      {
-        id: 'ui-module',
-        name: 'UI Module',
-        description: 'User interface components and pages',
-        files: files.filter(f => f.includes('components/') || f.includes('pages/')).slice(0, 15),
-        fileCount: files.filter(f => f.includes('components/') || f.includes('pages/')).length
-      }
-    ].filter(m => m.fileCount > 0);
+    const analysis = await analyzeOverview(repoData, files, packageJson);
     
     return NextResponse.json({
       repository: {
         owner,
         repo,
-        description: repoData.description || 'No description available'
+        description: repoData.description || 'No description available',
+        language: repoData.language,
+        stars: repoData.stargazers_count,
+        url: repoData.html_url
       },
-      modules: mockModules,
+      modules: analysis.modules,
       totalFiles: files.length,
       hasPackageJson: !!packageJson
     });
   } catch (error: any) {
     console.error('Overview API error:', error);
+    
+    let errorMessage = 'Failed to analyze repository';
+    let statusCode = 500;
+    
+    if (error.message.includes('not found')) {
+      errorMessage = error.message;
+      statusCode = 404;
+    } else if (error.message.includes('rate limit')) {
+      errorMessage = error.message;
+      statusCode = 429;
+    } else if (error.message.includes('parse')) {
+      errorMessage = 'AI analysis failed. Please try again.';
+      statusCode = 500;
+    }
+    
     return NextResponse.json(
-      { error: error.message || 'Failed to analyze repository' },
-      { status: 500 }
+      { error: errorMessage },
+      { status: statusCode }
     );
   }
 }
